@@ -1,0 +1,33 @@
+{
+  "source": "uploaded archive before changes",
+  "carrier_counterexamples": [
+    {
+      "case": "duplicate",
+      "read_success": true,
+      "public_authorized": false
+    },
+    {
+      "case": "garbage",
+      "read_success": true,
+      "public_authorized": false
+    },
+    {
+      "case": "noncanonical-hex",
+      "read_success": true,
+      "public_authorized": false
+    }
+  ],
+  "product_certificate_counterexample": {
+    "actual_hazards": [
+      0,
+      0
+    ],
+    "upper_hazards": [
+      0.5,
+      0.5
+    ],
+    "survival_weighted_upper_certificate": 1.0,
+    "product_upper_envelope": 0.75,
+    "claimed_certificate_inequality": false
+  }
+}

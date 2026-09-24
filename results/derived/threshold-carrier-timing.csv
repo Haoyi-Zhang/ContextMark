@@ -1,0 +1,4 @@
+payload_groups,samples,median_mark_total_us,p95_mark_total_us,median_read_us,p95_read_us
+1,31,183.635,281.52,599.395,760.606
+2,31,436.432,528.479,1084.93,1222.525
+3,31,786.424,1001.806,1588.832,2124.031

@@ -1,0 +1,248 @@
+{
+  "schema": "contextmark-run-manifest",
+  "generated_utc": "2026-09-24T08:39:22Z",
+  "seed": 20260718,
+  "execution_status": {
+    "deterministic_suite": "CURRENT_81_OF_81_PASS",
+    "assurance_checks": "CURRENT_PASS",
+    "cpu_measurements": "FROZEN_COMPLETED_RUN_BOUND_TO_SAMPLE_FILES",
+    "full_driver_reexecution": "NOT_CLAIMED_AS_CURRENT_ALL_IN_ONE_RUN"
+  },
+  "commands": {
+    "tests": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python -m unittest discover -s tests -v",
+    "complete_driver": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python run_experiments.py"
+  },
+  "entry_count": 46,
+  "entries": [
+    {
+      "path": "contextmark/__init__.py",
+      "bytes": 57,
+      "sha256": "a7c726938cd75af4f8b64f4ddabede22ca9f7f91b15187a10bdb52129bfc4e13"
+    },
+    {
+      "path": "contextmark/assurance_checks.py",
+      "bytes": 3859,
+      "sha256": "ce3ba6ba05b5728a44adc2c905c27c8f5f417cd97429000448f6a00f5647d852"
+    },
+    {
+      "path": "contextmark/bounds.py",
+      "bytes": 7091,
+      "sha256": "6b84745779d162345c8106bedf4a4ebc58feb606cb61bae457d8563718143fbc"
+    },
+    {
+      "path": "contextmark/calibration.py",
+      "bytes": 3292,
+      "sha256": "cf78e1be0e6f3036e11ddc1456248f9ecab811fec80642a266a9a05baec176ba"
+    },
+    {
+      "path": "contextmark/campaigns.py",
+      "bytes": 13987,
+      "sha256": "b82ded37590ae56871e5b2fd67a8bef144bd50d3ad8b72cbe6bdf0d7cdbdd4bc"
+    },
+    {
+      "path": "contextmark/canonical.py",
+      "bytes": 2392,
+      "sha256": "5a059d3ce7c02d1a17dc0c395aed8c80156be3ca4b9b94827191ff4acbd3caba"
+    },
+    {
+      "path": "contextmark/compiler.py",
+      "bytes": 30886,
+      "sha256": "f25e13a9b290d5a5efebde6cdffeca4617b5a9ed0c0db91129e9bd9b12d21b1c"
+    },
+    {
+      "path": "contextmark/finite_model.py",
+      "bytes": 4474,
+      "sha256": "bdb55ca573debcb8e1646bff68f5dd16a07ebcd2e1128a8e71f21a824e962c3c"
+    },
+    {
+      "path": "contextmark/threshold_backend.py",
+      "bytes": 11072,
+      "sha256": "4e0b30bac8a34d560eaf7e58a920e4e9265057f9467c120af8ccb0e2c5e8dab4"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 35,
+      "sha256": "1ea8ed1a42f2f21e78c6613733d6cf970b92ee9c7f1835c35d479bead77eaec1"
+    },
+    {
+      "path": "results/derived/compiler-replay-scaling.csv",
+      "bytes": 1432,
+      "sha256": "3b12b9ea69c9a4d19db150c06680e4a14d4a212fd7a0b6238e9fc728042ede74"
+    },
+    {
+      "path": "results/derived/compiler-scaling.csv",
+      "bytes": 1776,
+      "sha256": "185690cc118b0f6c92feccd3cc3cef738cb78367c17997dc3598c4fb8ad9000f"
+    },
+    {
+      "path": "results/derived/optional-stopping-coverage.csv",
+      "bytes": 5234,
+      "sha256": "cf4fadb18bdbd5831fa73b66c9a1b5d7354a2e1dae8111f89c871edd81f1c686"
+    },
+    {
+      "path": "results/derived/query-caps.csv",
+      "bytes": 90,
+      "sha256": "d765ffc5ddb7107151a9963a45c98087da748f0e44664890ac0bc5b27a9829fb"
+    },
+    {
+      "path": "results/derived/security-collusion.csv",
+      "bytes": 543,
+      "sha256": "c2e2a41bf923d5655722c21d2bf9e031db7ccd6f352237b1e3c0aa052a23a173"
+    },
+    {
+      "path": "results/derived/security-nontransfer.csv",
+      "bytes": 568,
+      "sha256": "04021c2c0e5ccfa0bfdcb542fe8675b55ea890370f077e0298aa5f134aceeb7b"
+    },
+    {
+      "path": "results/derived/security-removal.csv",
+      "bytes": 590,
+      "sha256": "252c26b98e1e34fbfde9225a7aa7c840429b4decb3c8d288bb482ff6134362c1"
+    },
+    {
+      "path": "results/derived/security-unforgeability.csv",
+      "bytes": 634,
+      "sha256": "46222a8cd35749c08466feb990b23cff96b88402d2436988ad1fce6687352729"
+    },
+    {
+      "path": "results/derived/threshold-carrier-timing.csv",
+      "bytes": 207,
+      "sha256": "2ae5d3fc7f1fae7ea38491bb4338f91267d9d8c7e0c8c403f048be5cf70b1532"
+    },
+    {
+      "path": "results/raw/architecture-baseline-summary.json",
+      "bytes": 138,
+      "sha256": "ffc9bde6ff216673645bcdf19b00aab7b8f962e267932caf4edd19a6b871a15b"
+    },
+    {
+      "path": "results/raw/architecture-baselines.csv",
+      "bytes": 2720,
+      "sha256": "355df8ce49e19928bbd6ad3c95854aa68526a6bf2d9ab2def2a5cfe727cb573d"
+    },
+    {
+      "path": "results/raw/bound-inputs-and-caps.json",
+      "bytes": 405,
+      "sha256": "35bcd8271e8ae0cf8d80fde21ea565182e5560d7e0922ed994e07b4ef4ece561"
+    },
+    {
+      "path": "results/raw/compiler-scaling-samples.csv",
+      "bytes": 34114,
+      "sha256": "a54a65bc63f9c1e5512dc75b049c78164e8ced1a45651983e5e4f5fb81ba13df"
+    },
+    {
+      "path": "results/raw/environment.json",
+      "bytes": 447,
+      "sha256": "5a446181b4f229794c91c01f752d762e5cda01ef23c633d57339eeaf989a578d"
+    },
+    {
+      "path": "results/raw/equal-marginal-history-counterexample.json",
+      "bytes": 286,
+      "sha256": "2d9401b0931f0489fba7e7cf130950b79abd3647f121bc9baea951ef5902d6c0"
+    },
+    {
+      "path": "results/raw/exact-probability-checks.csv",
+      "bytes": 556,
+      "sha256": "c4c88fca70938573252b930e3ebcc573f2fd3e04ee0bc02782a39d934d9241cc"
+    },
+    {
+      "path": "results/raw/finite-attack-harness-summary.json",
+      "bytes": 502,
+      "sha256": "3caeb470dde3e8f38d53ee488ce1a202c63514db52bd87a13fcfc7484d241653"
+    },
+    {
+      "path": "results/raw/finite-attack-harness.csv",
+      "bytes": 3886,
+      "sha256": "cdabe739485fd4000c4715294ea9a2056f5a19516c764ac8ad4f1efeb27dd3ba"
+    },
+    {
+      "path": "results/raw/mutation-campaign-summary.json",
+      "bytes": 139,
+      "sha256": "1266dedf409d7d63f5d345eb255004a39f624051e65ace1078eb9b0925476847"
+    },
+    {
+      "path": "results/raw/mutation-campaign.csv",
+      "bytes": 1907,
+      "sha256": "93ac9e7453a04305cda0c1f28d422aa92c61c054fe4311d8a250a2c5d25dda0b"
+    },
+    {
+      "path": "results/raw/negative-control-envelope-deletion.json",
+      "bytes": 117,
+      "sha256": "08f1c8455eb017706fec4eb897c1380f9d4ecb4ac86a3024eb730aa57b11e37e"
+    },
+    {
+      "path": "results/raw/optional-stopping-summary.json",
+      "bytes": 642,
+      "sha256": "2d9affd0cb161fa4e20aeb2cca5ec896179032fc50e44f4d56cfd1e600a28627"
+    },
+    {
+      "path": "results/raw/proof-implementation-checks.json",
+      "bytes": 53342,
+      "sha256": "1ef0390b4223f90870c796a860bc25933704122a00091ca14721e879b79bbb90"
+    },
+    {
+      "path": "results/raw/resume-registry-continuity-audit.json",
+      "bytes": 150,
+      "sha256": "9e140554248e46284fb6390bb3697265d16542afeb1dfc8d94c6ebc3772a6c67"
+    },
+    {
+      "path": "results/raw/run-summary.json",
+      "bytes": 13691,
+      "sha256": "6ac10e0eed39dd575f91f2033a4621fff3a09add3d6c2a0763abd11fcb61ba34"
+    },
+    {
+      "path": "results/raw/safeguard-lattice-summary.json",
+      "bytes": 122,
+      "sha256": "ff6bb231772f0a348c79a7e93cf20543f1a45700aa006cd53ac75ae4f38415bc"
+    },
+    {
+      "path": "results/raw/safeguard-lattice.csv",
+      "bytes": 42079,
+      "sha256": "49c9a9e980568be180aa7ad4f0a0a5addf7c377db863340832d27ecbff63470a"
+    },
+    {
+      "path": "results/raw/terminal-failure-registry-audit.json",
+      "bytes": 262,
+      "sha256": "4da6cd579cd6e83787e64a14c8252f692c8369769883aeb6d2a180c48b191b14"
+    },
+    {
+      "path": "results/raw/test-output.txt",
+      "bytes": 10723,
+      "sha256": "45bce0bf76b6797e803aff5a5cf13be875f12d8eda55f4cec14cc8e2b2f2fc6c"
+    },
+    {
+      "path": "results/raw/test-summary.json",
+      "bytes": 199,
+      "sha256": "93e34ab37bf022e54066d64c66765f1eb9be3a1654ba393d8c809de0786846db"
+    },
+    {
+      "path": "results/raw/threshold-audit-summary.json",
+      "bytes": 242,
+      "sha256": "a66d9b69096b3d8f7b12d36d7d6090a3dd96d3299321d763f93394e07f5d5dc1"
+    },
+    {
+      "path": "results/raw/threshold-deletion-authorization.csv",
+      "bytes": 875,
+      "sha256": "77bb6a851256b3e0bc4c44774dd6580fbccd991033c3d4b63dcda064e5cc4599"
+    },
+    {
+      "path": "results/raw/threshold-single-mutations.csv",
+      "bytes": 403,
+      "sha256": "9436d5ca4c0cde71e56bb9756e7a4ac337a4511f5c9f7e76d03dd2ec8be830f8"
+    },
+    {
+      "path": "run_experiments.py",
+      "bytes": 20211,
+      "sha256": "295f490f3fef691a2f3e56b797142f491136445eb05487db21a6214023e3e8ff"
+    },
+    {
+      "path": "tests/test_contextmark.py",
+      "bytes": 21023,
+      "sha256": "194c4a6659a45c6de0ba912034c1b1a041abe079a335cddc4ae631edda2757cf"
+    },
+    {
+      "path": "tests/test_security_boundaries.py",
+      "bytes": 6694,
+      "sha256": "8b7456a0ab8c64afbf2ff5141ad35023bbe3455ee7a405945bbdf9b6714ffb25"
+    }
+  ]
+}

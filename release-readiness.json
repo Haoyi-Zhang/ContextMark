@@ -1,0 +1,21 @@
+{
+  "schema": "tdsc-release-readiness",
+  "generated_utc": "2026-09-24T08:50:42Z",
+  "internal_scientific_p0": 0,
+  "internal_scientific_p1": 0,
+  "manuscript_build_status": "PASS_14_PAGE_MAIN_11_PAGE_SUPPLEMENT_BYTE_IDENTICAL_CLEAN_BUILDS",
+  "artifact_test_status": "81/81 PASS",
+  "independent_review": "STATELESS_REVIEW_UNAVAILABLE",
+  "submission_policy": "HOLD",
+  "submission_blockers": [
+    "author positions 4--6 unknown",
+    "all authorship and contribution approvals incomplete",
+    "Xunzhu Tang ORCID not supplied",
+    "provisional corresponding-author role not confirmed by all authors",
+    "production attestation and watermark baselines not executed",
+    "live venue length and overlength route not confirmed"
+  ],
+  "visual_status": "PASS_25_PAGES_DUAL_RENDER",
+  "reference_status": "PASS_66_OF_66_LOCAL_SINGLE_KEY_CITATIONS",
+  "artifact_status": "PASS_81_OF_81_TESTS"
+}

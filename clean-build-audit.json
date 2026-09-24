@@ -1,0 +1,37 @@
+{
+  "schema": "tdsc-clean-build-audit",
+  "generated_utc": "2026-09-24T08:50:42Z",
+  "status": "PASS",
+  "source_date_epoch": 1784332800,
+  "clean_directories": [
+    "clean-build-a",
+    "clean-build-b"
+  ],
+  "main_hashes": [
+    "a7f7fe279267242bdd970e47a5b49f2ffecd153d91ad6322b5de71a4811370df",
+    "a7f7fe279267242bdd970e47a5b49f2ffecd153d91ad6322b5de71a4811370df",
+    "a7f7fe279267242bdd970e47a5b49f2ffecd153d91ad6322b5de71a4811370df"
+  ],
+  "supplement_hashes": [
+    "3885d9ff6b323fdbddf193c5e8db1521defef056f08501251f48447f4204a127",
+    "3885d9ff6b323fdbddf193c5e8db1521defef056f08501251f48447f4204a127",
+    "3885d9ff6b323fdbddf193c5e8db1521defef056f08501251f48447f4204a127"
+  ],
+  "main_byte_identical": true,
+  "supplement_byte_identical": true,
+  "final_log_checks": {
+    "main": {
+      "overfull_boxes": 0,
+      "underfull_boxes": 31,
+      "undefined_references_or_citations": false,
+      "latex_warning_count": 0
+    },
+    "supplement": {
+      "overfull_boxes": 0,
+      "underfull_boxes": 7,
+      "undefined_references_or_citations": false,
+      "latex_warning_count": 0
+    }
+  },
+  "verdict": "PASS_TWO_INDEPENDENT_CLEAN_BUILDS_BYTE_IDENTICAL_TO_RELEASE_PDFS"
+}

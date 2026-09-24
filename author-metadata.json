@@ -1,0 +1,69 @@
+{
+  "schema": "tdsc-author-metadata",
+  "updated_utc": "2026-09-24T08:36:48Z",
+  "status": "THREE_IDENTIFIED_AUTHORS_AND_THREE_RESERVED_SLOTS",
+  "planned_slots": 6,
+  "identified_authors": 3,
+  "submission_ready": false,
+  "authors": [
+    {
+      "position": 1,
+      "name": "Haoyi Zhang",
+      "affiliation": "Xi'an Jiaotong-Liverpool University, Suzhou, China",
+      "email": "hyeliozhang@gmail.com",
+      "orcid": "0009-0009-3693-786X",
+      "corresponding": false,
+      "orcid_checksum_valid": true
+    },
+    {
+      "position": 2,
+      "name": "Huaijin Ran",
+      "affiliation": "Nanyang Technological University, Singapore, Singapore",
+      "email": "huaijin003@e.ntu.edu.sg",
+      "orcid": "0009-0009-2482-2344",
+      "corresponding": true,
+      "corresponding_status": "PROVISIONAL_PENDING_ALL_AUTHOR_APPROVAL",
+      "orcid_checksum_valid": true
+    },
+    {
+      "position": 3,
+      "name": "Xunzhu Tang",
+      "affiliation": "University of Luxembourg, Esch-sur-Alzette, Luxembourg",
+      "email": "realdanieltang@gmail.com",
+      "orcid": null,
+      "corresponding": false,
+      "orcid_checksum_valid": null
+    },
+    {
+      "position": 4,
+      "name": null,
+      "affiliation": null,
+      "email": null,
+      "orcid": null,
+      "status": "RESERVED_EMPTY_SLOT"
+    },
+    {
+      "position": 5,
+      "name": null,
+      "affiliation": null,
+      "email": null,
+      "orcid": null,
+      "status": "RESERVED_EMPTY_SLOT"
+    },
+    {
+      "position": 6,
+      "name": null,
+      "affiliation": null,
+      "email": null,
+      "orcid": null,
+      "status": "RESERVED_EMPTY_SLOT"
+    }
+  ],
+  "rendering": "The first row prints the three identified authors; an invisible fixed-width second row reserves equal space for positions four through six without inventing identities.",
+  "blocking_human_actions": [
+    "identify positions 4--6",
+    "confirm eligibility, order, contributions, conflicts, rights, and final approval",
+    "confirm corresponding author",
+    "provide Xunzhu Tang ORCID if one exists"
+  ]
+}

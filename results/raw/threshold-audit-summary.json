@@ -1,0 +1,10 @@
+{
+  "canonical_multi_candidate_returns": 25,
+  "deletion_cases": 32,
+  "noncontributor_three": 0,
+  "noncontributor_two": 0,
+  "passed": true,
+  "single_mutation_cases": 25,
+  "three_contributor_cells": 4096,
+  "two_contributor_cells": 256
+}

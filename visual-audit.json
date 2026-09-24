@@ -1,0 +1,61 @@
+{
+  "schema": "tdsc-visual-audit",
+  "generated_utc": "2026-09-24T08:50:42Z",
+  "status": "PASS",
+  "documents": {
+    "paper/main.pdf": {
+      "sha256": "a7f7fe279267242bdd970e47a5b49f2ffecd153d91ad6322b5de71a4811370df",
+      "pages": 14
+    },
+    "paper/supplement.pdf": {
+      "sha256": "3885d9ff6b323fdbddf193c5e8db1521defef056f08501251f48447f4204a127",
+      "pages": 11
+    }
+  },
+  "renderers": [
+    "Poppler",
+    "PDFium"
+  ],
+  "dpi": 200,
+  "pages_inspected": 25,
+  "publication_size_pages_inspected": {
+    "main": [
+      1,
+      3,
+      7,
+      10,
+      11,
+      14
+    ],
+    "supplement": [
+      1,
+      7,
+      9,
+      10,
+      11
+    ]
+  },
+  "core_figure_checks": {
+    "figure_1": "PASS_SEPARATED_RECORD_AND_ARTIFACT_LANES_OPEN_VERTICAL_INTERFACE_CORRIDORS_NO_TEXT_MODULE_OR_LINE_COLLISION",
+    "figure_2": "PASS_FOUR_ALIGNED_PANELS_NO_TITLE_TICK_OR_CURVE_COLLISION",
+    "figure_3": "PASS_COMMON_HYBRID_TWO_DEPENDENCY_BRANCHES_FOUR_TERMINAL_CARDS_NO_CROSSING_CONNECTORS",
+    "figure_4": "PASS_TRANSPARENT_LABEL_AND_LEGEND_NO_CURVE_OCCLUSION",
+    "figure_5": "PASS_TRANSPARENT_LEGENDS_DISTINCT_MARKS_AND_NO_FRAME_COLLISION",
+    "equations_3_4": "PASS_COMPACT_MATHEMATICAL_DOMAIN_CONSTANTS"
+  },
+  "findings": {
+    "text_or_formula_overlap": false,
+    "module_overlap": false,
+    "line_or_arrow_through_module": false,
+    "arrow_endpoint_collision": false,
+    "opaque_label_occlusion": false,
+    "legend_or_axis_collision": false,
+    "table_overflow_or_clipping": false,
+    "page_clipping": false,
+    "black_block_or_broken_glyph": false,
+    "blank_tail_page": false,
+    "renderer_specific_missing_content": false
+  },
+  "renderer_parity_maximum_unmatched_foreground_ratio": 0.0,
+  "verdict": "PASS_NO_OVERLAP_OCCLUSION_CLIPPING_BROKEN_GLYPH_BLANK_TAIL_OR_RENDERER_SPECIFIC_LOSS"
+}

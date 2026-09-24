@@ -1,0 +1,111 @@
+{
+  "schema": "tdsc-release-validation",
+  "generated_utc": "2026-09-24T08:52:24Z",
+  "status": "PASS_FINAL_INTERNAL_RELEASE; EXTERNAL_SUBMISSION_HOLD",
+  "root_contract": {
+    "expected": [
+      "CURRENT-STATE.md",
+      "artifact",
+      "paper",
+      "research-plan.md"
+    ],
+    "observed": [
+      "CURRENT-STATE.md",
+      "artifact",
+      "paper",
+      "research-plan.md"
+    ],
+    "pass": true
+  },
+  "manifest": {
+    "sha256": "5755518a91cb8f736b496c7afa82722c636571e80ef24e91381c1e02e73a51b3",
+    "covered_file_count": 92,
+    "canonical_tree_digest_sha256": "514a27a66defb8ee58a94e75b65747d04a6c7557865d8bbc57f98025ddc76aae",
+    "excluded_non_circular_files": [
+      "artifact/release-manifest.json",
+      "artifact/release-validation.json"
+    ]
+  },
+  "manuscript": {
+    "main_pages": 14,
+    "supplement_pages": 11,
+    "main_pdf_sha256": "a7f7fe279267242bdd970e47a5b49f2ffecd153d91ad6322b5de71a4811370df",
+    "supplement_pdf_sha256": "3885d9ff6b323fdbddf193c5e8db1521defef056f08501251f48447f4204a127",
+    "main_tex_sha256": "d5f968c394cc5a8553654a23cf92c0fd0e3b5122bd6ee58305335cb9525a0d42",
+    "supplement_tex_sha256": "556df342d861992f9308919677ca2960cb19734e001c994ef3cfc2ad7e88868f",
+    "references_bib_sha256": "c2f1886eadd742be3f7827715c903882ef5e3ea5686292071bfbefdec8d84263",
+    "abstract_words": 193,
+    "page_fit": "PASS_EXACT_14_PAGES_BOTH_COLUMNS_WITHIN_ONE_NORMAL_LINE",
+    "pdf_preflight": "PASS",
+    "visual_audit": "PASS",
+    "template_alignment": "PASS_INITIAL_SUBMISSION_TEMPLATE_ALIGNED_WITH_EXPLICIT_OVERLENGTH_HOLD",
+    "clean_build": "PASS",
+    "visible_text": "PASS",
+    "overlength_status": "14-page candidate relative to the general 12-page Computer Society Transactions baseline"
+  },
+  "authors": {
+    "planned_slots": 6,
+    "identified_authors": 3,
+    "identified_order": [
+      "Haoyi Zhang",
+      "Huaijin Ran",
+      "Xunzhu Tang"
+    ],
+    "reserved_empty_slots": [
+      4,
+      5,
+      6
+    ],
+    "provisional_corresponding_author": "Huaijin Ran",
+    "submission_ready": false,
+    "blocking_actions": [
+      "identify positions 4--6",
+      "confirm eligibility, order, contributions, conflicts, rights, and final approval",
+      "confirm corresponding author",
+      "provide Xunzhu Tang ORCID if one exists"
+    ]
+  },
+  "references": {
+    "count": 66,
+    "formal_publications": 61,
+    "preprints": 5,
+    "each_used_exactly_once": true,
+    "single_key_commands": 66,
+    "multi_key_commands": 0,
+    "all_full_texts_read": false,
+    "verification_levels": {
+      "BIBLIOGRAPHIC_RECORD_ONLY_PRIMARY_FULLTEXT_NOT_RETRIEVED": 18,
+      "PRIMARY_INSTITUTIONAL_METADATA": 5,
+      "PRIMARY_RECORD_OR_AUTHOR_ABSTRACT": 43
+    }
+  },
+  "executable_evidence": {
+    "tests": "81/81 PASS",
+    "mutations": "47/47 REJECT",
+    "named_attack_rows": 42,
+    "safeguard_cells": 384,
+    "authorization_closure_cases": 128,
+    "threshold_pairs": 496,
+    "small_field_equivalence_cases": 4802,
+    "threshold_mixture_cells": 4352,
+    "exact_probability_states": 1048576,
+    "exact_probability_max_error": 2.11148373091552e-16,
+    "cpu_256_private_ms": 158.095109,
+    "cpu_256_replay_ms": 5327.468352,
+    "cpu_256_ratio": 33.69786950208561,
+    "cpu_2048_build_ms": 1374.532884,
+    "cpu_2048_verify_median_ms": 274.47679700000003,
+    "cpu_2048_verify_p95_ms": 284.982233,
+    "run_manifest_sha256": "307c7cd6d6ccdf357fe6d9e4d7615a716b47295f552155234e78e2e466443360",
+    "run_summary_sha256": "6ac10e0eed39dd575f91f2033a4621fff3a09add3d6c2a0763abd11fcb61ba34"
+  },
+  "claim_controls": {
+    "overfitting_audit": "PASS",
+    "independent_review": "STATELESS_REVIEW_UNAVAILABLE",
+    "production_baseline_gaps": 3,
+    "submission_policy": "HOLD"
+  },
+  "open_internal_p0": 0,
+  "open_internal_p1": 0,
+  "evidence_maturity": "HUMAN_PROOFS_NOT_MECHANIZED; EXECUTABLE_INTERFACE_AND_CPU_EVIDENCE_VERIFIED"
+}

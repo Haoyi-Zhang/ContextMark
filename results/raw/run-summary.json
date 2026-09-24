@@ -1,0 +1,451 @@
+{
+  "assurance_checks": {
+    "closure_all_passed": true,
+    "closure_count": 128,
+    "passed": true,
+    "polynomial_equivalence_mismatches": 0,
+    "product_certificate_counterexample": {
+      "actual_first_hit": 0.0,
+      "actual_hazards": [
+        0.0,
+        0.0
+      ],
+      "product_probability_bound": 0.75,
+      "upper_certificate": 1.0,
+      "upper_hazards": [
+        0.5,
+        0.5
+      ]
+    },
+    "reader_timing": [
+      {
+        "legacy_subset_read_median_us": 11594.444,
+        "legacy_subsets": 10,
+        "legacy_timing_status": "measured",
+        "n": 5,
+        "residual_points": 2,
+        "residual_read_median_us": 793.644,
+        "runs": 31,
+        "t": 3
+      },
+      {
+        "legacy_subset_read_median_us": 865239.285,
+        "legacy_subsets": 252,
+        "legacy_timing_status": "measured",
+        "n": 10,
+        "residual_points": 5,
+        "residual_read_median_us": 3618.725,
+        "runs": 31,
+        "t": 5
+      },
+      {
+        "legacy_subset_read_median_us": null,
+        "legacy_subsets": 601080390,
+        "legacy_timing_status": "not_run_declared_combinatorial_boundary",
+        "n": 32,
+        "residual_points": 16,
+        "residual_read_median_us": 12860.016,
+        "runs": 31,
+        "t": 16
+      }
+    ],
+    "schema": "tdsc-assurance-checks",
+    "small_field_assignments": 4802,
+    "threshold_pair_count": 496,
+    "threshold_pairs_all_passed": true
+  },
+  "calibration": {
+    "analytic_anytime_upper_bound": 0.05,
+    "anytime_argmax_probability": 0.98,
+    "anytime_max_noncoverage": 0.021475760606010686,
+    "equal_marginal_counterexample": {
+      "calibration_challenge_one_probability": 0.5,
+      "calibration_failure_probability": 0.5,
+      "deployment_challenge_one_probability": 0.5,
+      "deployment_failure_probability": 1.0,
+      "equal_unconditional_challenge_marginal": true,
+      "historywise_conditional_domination_required": true
+    },
+    "family_alpha": 0.05,
+    "fixed_level_argmax_probability": 0.66,
+    "fixed_level_max_noncoverage": 0.1964083811338359,
+    "grid_points": 99,
+    "horizon": 64,
+    "valid": true
+  },
+  "compiler_scaling": [
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 1,
+      "manifest_bytes": 479,
+      "median_replay_total_us": 538.233,
+      "median_serialize_us": 7.801,
+      "median_validated_tip_total_us": 625.724,
+      "median_validated_tip_us_per_stage": 625.724,
+      "median_verify_us": 256.313,
+      "p95_serialize_us": 8.963,
+      "p95_validated_tip_total_us": 796.529,
+      "p95_verify_us": 326.688,
+      "replay_samples": 7,
+      "replay_to_tip_speedup": 0.860176371691033,
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 2,
+      "manifest_bytes": 1015,
+      "median_replay_total_us": 1320.751,
+      "median_serialize_us": 14.021,
+      "median_validated_tip_total_us": 1277.387,
+      "median_validated_tip_us_per_stage": 638.6935,
+      "median_verify_us": 417.453,
+      "p95_serialize_us": 17.316,
+      "p95_validated_tip_total_us": 1848.72,
+      "p95_verify_us": 1274.473,
+      "replay_samples": 7,
+      "replay_to_tip_speedup": 1.0339474254865597,
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 4,
+      "manifest_bytes": 2086,
+      "median_replay_total_us": 3140.778,
+      "median_serialize_us": 24.056,
+      "median_validated_tip_total_us": 2523.237,
+      "median_validated_tip_us_per_stage": 630.80925,
+      "median_verify_us": 653.195,
+      "p95_serialize_us": 26.039,
+      "p95_validated_tip_total_us": 3167.409,
+      "p95_verify_us": 819.153,
+      "replay_samples": 7,
+      "replay_to_tip_speedup": 1.2447415759994007,
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 8,
+      "manifest_bytes": 4228,
+      "median_replay_total_us": 8655.552,
+      "median_serialize_us": 46.169,
+      "median_validated_tip_total_us": 5189.257,
+      "median_validated_tip_us_per_stage": 648.657125,
+      "median_verify_us": 1193.502,
+      "p95_serialize_us": 85.447,
+      "p95_validated_tip_total_us": 14049.364,
+      "p95_verify_us": 1490.995,
+      "replay_samples": 7,
+      "replay_to_tip_speedup": 1.667975203386535,
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 16,
+      "manifest_bytes": 8562,
+      "median_replay_total_us": 25987.587,
+      "median_serialize_us": 89.253,
+      "median_validated_tip_total_us": 9760.311,
+      "median_validated_tip_us_per_stage": 610.0194375,
+      "median_verify_us": 2159.524,
+      "p95_serialize_us": 106.769,
+      "p95_validated_tip_total_us": 11317.807,
+      "p95_verify_us": 2285.371,
+      "replay_samples": 7,
+      "replay_to_tip_speedup": 2.662577760073424,
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 32,
+      "manifest_bytes": 17210,
+      "median_replay_total_us": 91604.395,
+      "median_serialize_us": 184.785,
+      "median_validated_tip_total_us": 19230.249,
+      "median_validated_tip_us_per_stage": 600.94528125,
+      "median_verify_us": 4559.587,
+      "p95_serialize_us": 245.457,
+      "p95_validated_tip_total_us": 22250.367,
+      "p95_verify_us": 5511.548,
+      "replay_samples": 7,
+      "replay_to_tip_speedup": 4.763557403754887,
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 64,
+      "manifest_bytes": 34506,
+      "median_replay_total_us": 335647.489,
+      "median_serialize_us": 373.357,
+      "median_validated_tip_total_us": 41056.402,
+      "median_validated_tip_us_per_stage": 641.50628125,
+      "median_verify_us": 8345.66,
+      "p95_serialize_us": 405.686,
+      "p95_validated_tip_total_us": 47397.86,
+      "p95_verify_us": 8728.952,
+      "replay_samples": 7,
+      "replay_to_tip_speedup": 8.17527773135113,
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 128,
+      "manifest_bytes": 69438,
+      "median_replay_total_us": 1317364.453,
+      "median_serialize_us": 765.993,
+      "median_validated_tip_total_us": 80318.159,
+      "median_validated_tip_us_per_stage": 627.4856171875,
+      "median_verify_us": 16799.0,
+      "p95_serialize_us": 833.053,
+      "p95_validated_tip_total_us": 88990.464,
+      "p95_verify_us": 18271.919,
+      "replay_samples": 7,
+      "replay_to_tip_speedup": 16.401825806291203,
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 256,
+      "manifest_bytes": 139262,
+      "median_replay_total_us": 5327468.352,
+      "median_serialize_us": 1678.707,
+      "median_validated_tip_total_us": 158095.109,
+      "median_validated_tip_us_per_stage": 617.55901953125,
+      "median_verify_us": 34664.594,
+      "p95_serialize_us": 2104.161,
+      "p95_validated_tip_total_us": 174981.369,
+      "p95_verify_us": 36523.32,
+      "replay_samples": 7,
+      "replay_to_tip_speedup": 33.69786950208561,
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 512,
+      "manifest_bytes": 278910,
+      "median_replay_total_us": "",
+      "median_serialize_us": 3521.036,
+      "median_validated_tip_total_us": 325194.867,
+      "median_validated_tip_us_per_stage": 635.146224609375,
+      "median_verify_us": 69970.856,
+      "p95_serialize_us": 4397.264,
+      "p95_validated_tip_total_us": 378686.141,
+      "p95_verify_us": 77566.997,
+      "replay_samples": 0,
+      "replay_to_tip_speedup": "",
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 1024,
+      "manifest_bytes": 560326,
+      "median_replay_total_us": "",
+      "median_serialize_us": 7402.872,
+      "median_validated_tip_total_us": 661158.876,
+      "median_validated_tip_us_per_stage": 645.66296484375,
+      "median_verify_us": 137198.307,
+      "p95_serialize_us": 8272.049,
+      "p95_validated_tip_total_us": 739331.234,
+      "p95_verify_us": 143462.309,
+      "replay_samples": 0,
+      "replay_to_tip_speedup": "",
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    },
+    {
+      "all_verifications_passed": true,
+      "artifact_bytes": 1089,
+      "chain_length": 2048,
+      "manifest_bytes": 1124038,
+      "median_replay_total_us": "",
+      "median_serialize_us": 15219.721,
+      "median_validated_tip_total_us": 1374532.884,
+      "median_validated_tip_us_per_stage": 671.158634765625,
+      "median_verify_us": 274476.797,
+      "p95_serialize_us": 16979.4,
+      "p95_validated_tip_total_us": 1480618.632,
+      "p95_verify_us": 284982.233,
+      "replay_samples": 0,
+      "replay_to_tip_speedup": "",
+      "serialize_samples": 31,
+      "session_samples": 31,
+      "verify_samples": 31
+    }
+  ],
+  "environment": {
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "cryptography": "46.0.4",
+    "gpu_used": false,
+    "human_evidence_used": false,
+    "learned_model_used": false,
+    "logical_cpu_count": 5,
+    "machine": "x86_64",
+    "model_api_used": false,
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "private_data_used": false,
+    "python": "3.13.5",
+    "python_implementation": "CPython",
+    "seed": 20260718,
+    "timestamp_utc": "2026-09-24T05:47:10Z"
+  },
+  "exact_probability_m20_elapsed_ms": 982.074389,
+  "exact_probability_max_error": 2.11148373091552e-16,
+  "query_caps": {
+    "collusion": 166,
+    "nontransfer": 2497,
+    "removal": 333,
+    "unforgeability": 999
+  },
+  "schema": "contextmark-experiment-summary",
+  "structural_campaigns": {
+    "architecture_baseline_success_counts": {
+      "complete": 0,
+      "context_mark_without_parents": 1,
+      "detached_records": 4,
+      "host_bound_owner_mark": 4,
+      "signed_owner_mark": 3
+    },
+    "finite_attack_harness": {
+      "complete_successful_attacks": 0,
+      "row_count": 42,
+      "valid": true,
+      "weakened_successes": {
+        "without_collusion_robustness": [
+          "two_copy_cancellation"
+        ],
+        "without_host_binding": [
+          "transplant_trace"
+        ],
+        "without_key_isolation": [
+          "adaptive_key_forgery"
+        ],
+        "without_one_copy_removal": [
+          "delete_trace"
+        ],
+        "without_parent_links": [
+          "parent_free_splice"
+        ],
+        "without_tip_binding": [
+          "replay_under_other_tip"
+        ]
+      }
+    },
+    "mutation_campaign": {
+      "artifact_cases": 10,
+      "case_count": 47,
+      "chain_language_cases": 7,
+      "record_field_cases": 30,
+      "rejected": 47,
+      "valid": true
+    },
+    "negative_control": {
+      "accepted_after_deletion": false,
+      "accepted_before": true,
+      "attack_succeeds": true,
+      "binder_equal": true
+    },
+    "resume_registry_continuity": {
+      "issue_without_registry_rejected": true,
+      "passed": true,
+      "restored_continuation_accepted": true,
+      "resume_without_registry_rejected": true
+    },
+    "safeguard_lattice": {
+      "attack_count": 6,
+      "configuration_count": 64,
+      "monotonicity_violations": 0,
+      "row_count": 384,
+      "valid": true
+    },
+    "terminal_failure_registry": {
+      "budget_rejected": true,
+      "calls_after_initial": 1,
+      "calls_after_retry": 1,
+      "initial_failed": true,
+      "passed": true,
+      "restored_backend_calls": 0,
+      "restored_retry_failed": true,
+      "retry_failed": true,
+      "status_counts": [
+        0,
+        1,
+        1
+      ]
+    },
+    "threshold_audit": {
+      "canonical_multi_candidate_returns": 25,
+      "deletion_cases": 32,
+      "noncontributor_three": 0,
+      "noncontributor_two": 0,
+      "passed": true,
+      "single_mutation_cases": 25,
+      "three_contributor_cells": 4096,
+      "two_contributor_cells": 256
+    }
+  },
+  "tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python -m unittest discover -s tests -v",
+    "deterministic_test_count": 81,
+    "failed": 0,
+    "passed": 81,
+    "returncode": 0,
+    "valid": true
+  },
+  "threshold_timing": [
+    {
+      "median_mark_total_us": 183.635,
+      "median_read_us": 599.395,
+      "p95_mark_total_us": 281.52,
+      "p95_read_us": 760.606,
+      "payload_groups": 1,
+      "samples": 31
+    },
+    {
+      "median_mark_total_us": 436.432,
+      "median_read_us": 1084.93,
+      "p95_mark_total_us": 528.479,
+      "p95_read_us": 1222.525,
+      "payload_groups": 2,
+      "samples": 31
+    },
+    {
+      "median_mark_total_us": 786.424,
+      "median_read_us": 1588.832,
+      "p95_mark_total_us": 1001.806,
+      "p95_read_us": 2124.031,
+      "payload_groups": 3,
+      "samples": 31
+    }
+  ]
+}
