@@ -33,6 +33,8 @@ from contextmark.campaigns import (
     terminal_failure_audit,
     threshold_audit,
     three_stage_fixture,
+    _candidate_selection_check,
+    _context_trace_check,
 )
 from contextmark.canonical import CanonicalizationError, canonical_bytes, expression_binder
 from contextmark.compiler import (
@@ -56,6 +58,7 @@ from contextmark.threshold_backend import (
     mark as threshold_mark,
     public_authorized_derivative,
     read as threshold_read,
+    payload_commitment,
     read_candidates,
 )
 
@@ -114,6 +117,13 @@ class EnvelopeTests(unittest.TestCase):
     def test_10_envelope_deletion_is_negative_control(self):
         artifact = self.backend.mark(self.key, self.program, self.payload)
         artifact.pop("_contextmark")
+        self.assertIsNone(self.backend.read(self.key, artifact))
+
+    def test_envelope_full_artifact_canonicalization_rejects_hidden_float(self):
+        artifact = self.backend.mark(self.key, self.program, self.payload)
+        # The expression binder erases this field.  The reader must nevertheless
+        # reject the noncanonical complete artifact before binder evaluation.
+        artifact["_threshold_carriers"] = [1.5]
         self.assertIsNone(self.backend.read(self.key, artifact))
 
 
@@ -184,8 +194,40 @@ class ThresholdTests(unittest.TestCase):
         self.assertTrue(report["passed"])
         self.assertEqual(report["deletion_cases"], 32)
         self.assertEqual(report["single_mutation_cases"], 25)
+        self.assertTrue(report["single_mutations_all_still_read"])
         self.assertEqual(report["two_contributor_cells"], 256)
         self.assertEqual(report["three_contributor_cells"], 4096)
+        self.assertEqual(report["coalition_cells"], 4352)
+        self.assertEqual(report["coalition_trace_mismatches"], 0)
+        self.assertEqual(report["coalition_canonical_selection_mismatches"], 0)
+
+    def test_threshold_checker_rejects_nonempty_expected_but_empty_reader(self):
+        report = _candidate_selection_check([self.payload], [], None)
+        self.assertFalse(report["passed"])
+        self.assertFalse(report["candidate_set_matches"])
+
+    def test_threshold_checker_rejects_empty_expected_but_nonempty_reader(self):
+        report = _candidate_selection_check([], [(payload_commitment(self.payload), self.payload)], self.payload)
+        self.assertFalse(report["passed"])
+        self.assertFalse(report["candidate_set_matches"])
+
+    def test_threshold_checker_rejects_wrong_scalar_contributor(self):
+        second = hashlib.sha256(b"second-checker").digest()
+        actual = sorted(
+            [(payload_commitment(self.payload), self.payload), (payload_commitment(second), second)],
+            key=lambda item: item[0],
+        )
+        wrong = actual[-1][1]
+        report = _candidate_selection_check([self.payload, second], actual, wrong)
+        self.assertFalse(report["passed"])
+        self.assertTrue(report["candidate_set_matches"])
+        self.assertFalse(report["canonical_selection_matches"])
+
+    def test_compiled_trace_checker_rejects_missing_expected_context(self):
+        expected = ["01" * 32]
+        report = _context_trace_check(expected, [], None)
+        self.assertFalse(report["passed"])
+        self.assertFalse(report["trace_set_matches"])
 
 
 class CompilerTests(unittest.TestCase):
@@ -265,6 +307,26 @@ class CompilerTests(unittest.TestCase):
         )
         chain, artifact = compiler.issue([], make_demo_program(4), actor="builder", operation="compile", metadata={"issue_id": "t"})
         self.assertTrue(compiler.verify(chain, artifact))
+
+    def test_public_verifier_converts_binder_runtime_error_to_rejection(self):
+        compiler = ContextMarkCompiler.deterministic(["builder"], chain_id="binder-runtime")
+        chain, artifact = compiler.issue([], make_demo_program(4), actor="builder", operation="compile")
+        def failing_binder(_artifact):
+            raise RuntimeError("injected binder failure")
+        compiler.binder = failing_binder
+        result = compiler.verify_detailed(chain, artifact)
+        self.assertFalse(result.accepted)
+        self.assertIn("injected binder failure", result.reason)
+
+    def test_public_verifier_converts_reader_runtime_error_to_rejection(self):
+        compiler = ContextMarkCompiler.deterministic(["builder"], chain_id="reader-runtime")
+        chain, artifact = compiler.issue([], make_demo_program(4), actor="builder", operation="compile")
+        def failing_reader(_key, _artifact):
+            raise RuntimeError("injected reader failure")
+        compiler.backend.read = failing_reader
+        result = compiler.verify_detailed(chain, artifact)
+        self.assertFalse(result.accepted)
+        self.assertIn("injected reader failure", result.reason)
 
     def test_37_record_limit_rejects(self):
         compiler = ContextMarkCompiler.deterministic(["builder"], chain_id="limit", max_records=1)
@@ -381,6 +443,11 @@ class BoundCalibrationTests(unittest.TestCase):
 
     def test_52_evidence_conditioned_bound(self):
         self.assertAlmostEqual(evidence_conditioned_bound(0.1, calibration_errors=[0.02, 0.03], key_switch_loss=0.01), 0.16)
+
+    def test_evidence_conditioned_bound_caps_nonprobability_certificate(self):
+        self.assertEqual(evidence_conditioned_bound(1.5, calibration_errors=[0.02], key_switch_loss=0.01), 1.0)
+        with self.assertRaises(ValueError):
+            evidence_conditioned_bound(-0.1)
 
     def test_53_conditional_kernel_shift(self):
         self.assertAlmostEqual(conditional_kernel_shift(0.1, 1.5, 0.02), 0.17)

@@ -11,6 +11,7 @@ test_57_spending_schedule_telescopes (test_contextmark.BoundCalibrationTests.tes
 test_58_repeated_look_fixed_inflates (test_contextmark.BoundCalibrationTests.test_58_repeated_look_fixed_inflates) ... ok
 test_59_coverage_grid (test_contextmark.BoundCalibrationTests.test_59_coverage_grid) ... ok
 test_60_equal_marginal_counterexample (test_contextmark.BoundCalibrationTests.test_60_equal_marginal_counterexample) ... ok
+test_evidence_conditioned_bound_caps_nonprobability_certificate (test_contextmark.BoundCalibrationTests.test_evidence_conditioned_bound_caps_nonprobability_certificate) ... ok
 test_01_canonical_key_order (test_contextmark.CanonicalTests.test_01_canonical_key_order) ... ok
 test_02_canonical_rejects_float (test_contextmark.CanonicalTests.test_02_canonical_rejects_float) ... ok
 test_03_canonical_rejects_nonstring_key (test_contextmark.CanonicalTests.test_03_canonical_rejects_nonstring_key) ... ok
@@ -32,11 +33,14 @@ test_35_negative_control (test_contextmark.CompilerTests.test_35_negative_contro
 test_36_threshold_backend_compiler_integration (test_contextmark.CompilerTests.test_36_threshold_backend_compiler_integration) ... ok
 test_37_record_limit_rejects (test_contextmark.CompilerTests.test_37_record_limit_rejects) ... ok
 test_38_context_precedes_signature_and_signature_authenticates_context (test_contextmark.CompilerTests.test_38_context_precedes_signature_and_signature_authenticates_context) ... ok
+test_public_verifier_converts_binder_runtime_error_to_rejection (test_contextmark.CompilerTests.test_public_verifier_converts_binder_runtime_error_to_rejection) ... ok
+test_public_verifier_converts_reader_runtime_error_to_rejection (test_contextmark.CompilerTests.test_public_verifier_converts_reader_runtime_error_to_rejection) ... ok
 test_06_envelope_correctness (test_contextmark.EnvelopeTests.test_06_envelope_correctness) ... ok
 test_07_envelope_wrong_key_rejects (test_contextmark.EnvelopeTests.test_07_envelope_wrong_key_rejects) ... ok
 test_08_envelope_tag_tamper_rejects (test_contextmark.EnvelopeTests.test_08_envelope_tag_tamper_rejects) ... ok
 test_09_envelope_host_tamper_rejects (test_contextmark.EnvelopeTests.test_09_envelope_host_tamper_rejects) ... ok
 test_10_envelope_deletion_is_negative_control (test_contextmark.EnvelopeTests.test_10_envelope_deletion_is_negative_control) ... ok
+test_envelope_full_artifact_canonicalization_rejects_hidden_float (test_contextmark.EnvelopeTests.test_envelope_full_artifact_canonicalization_rejects_hidden_float) ... ok
 test_61_omission_matrix (test_contextmark.FiniteModelCampaignTests.test_61_omission_matrix) ... ok
 test_62_safeguard_lattice (test_contextmark.FiniteModelCampaignTests.test_62_safeguard_lattice) ... ok
 test_63_architecture_baseline_counts (test_contextmark.FiniteModelCampaignTests.test_63_architecture_baseline_counts) ... ok
@@ -63,6 +67,10 @@ test_19_threshold_public_authorization_ignores_damage_but_counts_exact_retention
 test_20_threshold_multiple_payloads_select_canonical_valid_candidate (test_contextmark.ThresholdTests.test_20_threshold_multiple_payloads_select_canonical_valid_candidate) ... ok
 test_21_threshold_adapter_roundtrip (test_contextmark.ThresholdTests.test_21_threshold_adapter_roundtrip) ... ok
 test_22_threshold_full_campaign (test_contextmark.ThresholdTests.test_22_threshold_full_campaign) ... ok
+test_compiled_trace_checker_rejects_missing_expected_context (test_contextmark.ThresholdTests.test_compiled_trace_checker_rejects_missing_expected_context) ... ok
+test_threshold_checker_rejects_empty_expected_but_nonempty_reader (test_contextmark.ThresholdTests.test_threshold_checker_rejects_empty_expected_but_nonempty_reader) ... ok
+test_threshold_checker_rejects_nonempty_expected_but_empty_reader (test_contextmark.ThresholdTests.test_threshold_checker_rejects_nonempty_expected_but_empty_reader) ... ok
+test_threshold_checker_rejects_wrong_scalar_contributor (test_contextmark.ThresholdTests.test_threshold_checker_rejects_wrong_scalar_contributor) ... ok
 test_additional_authenticated_off_polynomial_point_rejects (test_security_boundaries.CarrierClosureRegression.test_additional_authenticated_off_polynomial_point_rejects) ... ok
 test_canonical_junk_preserves_reader_and_public_authorization (test_security_boundaries.CarrierClosureRegression.test_canonical_junk_preserves_reader_and_public_authorization) ... ok
 test_duplicate_insufficient_positions_never_reach_threshold (test_security_boundaries.CarrierClosureRegression.test_duplicate_insufficient_positions_never_reach_threshold) ... ok
@@ -81,6 +89,6 @@ test_all_supported_threshold_pairs_preserve_payload (test_security_boundaries.Po
 test_exhaustive_small_field_matches_all_subset_definition (test_security_boundaries.PolynomialResidualRegression.test_exhaustive_small_field_matches_all_subset_definition) ... ok
 
 ----------------------------------------------------------------------
-Ran 81 tests in 11.303s
+Ran 89 tests in 11.349s
 
 OK

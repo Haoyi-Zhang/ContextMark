@@ -1,33 +1,31 @@
 {
-  "source": "uploaded archive before changes",
-  "carrier_counterexamples": [
-    {
-      "case": "duplicate",
-      "read_success": true,
-      "public_authorized": false
+  "schema": "tdsc-boundary-witnesses-v2",
+  "generated_utc": "2026-09-26T09:27:49Z",
+  "pre_repair_witnesses": {
+    "loose_certificate": {
+      "uncapped_certificate": 1.5,
+      "required_final_cap": 1.0
     },
-    {
-      "case": "garbage",
-      "read_success": true,
-      "public_authorized": false
+    "hidden_noncanonical_field": {
+      "artifact_field": "_threshold_carriers",
+      "value": [
+        1.5
+      ],
+      "binder_ignores_field": true,
+      "reader_must_reject_complete_artifact": true
     },
-    {
-      "case": "noncanonical-hex",
-      "read_success": true,
-      "public_authorized": false
+    "verifier_exceptions": {
+      "binder_RuntimeError": "reject",
+      "reader_RuntimeError": "reject"
+    },
+    "truth_table_views": {
+      "row_count": 42,
+      "lattice_cells": 384,
+      "architecture_names": 5,
+      "shared_rule": "REQUIRED",
+      "independent_interaction_evidence": false
     }
-  ],
-  "product_certificate_counterexample": {
-    "actual_hazards": [
-      0,
-      0
-    ],
-    "upper_hazards": [
-      0.5,
-      0.5
-    ],
-    "survival_weighted_upper_certificate": 1.0,
-    "product_upper_envelope": 0.75,
-    "claimed_certificate_inequality": false
-  }
+  },
+  "current_regression_status": "CLOSED_BY_TESTS_AND_ASSURANCE_CHECKS",
+  "evidence": "artifact/results/raw/proof-implementation-checks.json; artifact/results/raw/run-summary.json; artifact/tests/"
 }

@@ -3,10 +3,15 @@ from __future__ import annotations
 from copy import deepcopy
 from itertools import combinations, product
 from unittest.mock import patch
-import math, statistics, time
 from . import threshold_backend as tb
-from .compiler import make_demo_program
-from .bounds import first_hit_probability, fixed_schedule_product, survival_weighted_certificate
+from .compiler import AuthenticatedEnvelopeBackend, ContextMarkCompiler, make_demo_program
+from .bounds import (
+    evidence_conditioned_bound,
+    first_hit_probability,
+    fixed_schedule_product,
+    survival_weighted_certificate,
+)
+from .canonical import expression_binder
 
 
 def assurance_checks():
@@ -35,21 +40,25 @@ def assurance_checks():
         for t in range(2,n+1):
             x=tb.mark(k,make_demo_program(2),payload,n=n,t=t)
             supported.append({'n':n,'t':t,'passed':tb.read(k,x)==payload})
-    timing=[]
-    for n,t in [(5,3),(10,5),(32,16)]:
-        x=tb.mark(k,make_demo_program(8),payload,n=n,t=t)
-        new_times=[]; old_times=[]
-        for _ in range(31):
-            start=time.perf_counter_ns(); assert tb.read(k,x)==payload
-            new_times.append((time.perf_counter_ns()-start)/1000)
-            if n<=10:
-                start=time.perf_counter_ns(); cs=tb._valid_carriers(k,x)
-                points=[(c['index'],int(c['value'],16)) for c in cs]
-                old=all(tb._interpolate(list(q))==int.from_bytes(payload,'big') for q in combinations(points,t))
-                assert old
-                old_times.append((time.perf_counter_ns()-start)/1000)
-        timing.append({'n':n,'t':t,'runs':31,'legacy_subsets':math.comb(n,t),'residual_points':n-t,'residual_read_median_us':statistics.median(new_times),'legacy_subset_read_median_us':statistics.median(old_times) if old_times else None,'legacy_timing_status':'measured' if old_times else 'not_run_declared_combinatorial_boundary'})
     product_case={'actual_hazards':[0.0,0.0],'upper_hazards':[0.5,0.5],'actual_first_hit':first_hit_probability([0,0]),'upper_certificate':survival_weighted_certificate([0,0],[.5,.5]),'product_probability_bound':fixed_schedule_product([.5,.5])}
-    result={'schema':'tdsc-assurance-checks','closure_rows':closure,'closure_count':len(closure),'closure_all_passed':all(r['passed'] for r in closure),'small_field_assignments':assignments,'polynomial_equivalence_mismatches':mismatches,'threshold_parameter_pairs':supported,'threshold_pair_count':len(supported),'threshold_pairs_all_passed':all(r['passed'] for r in supported),'reader_timing':timing,'product_certificate_counterexample':product_case}
-    result['passed']=result['closure_all_passed'] and not mismatches and result['threshold_pairs_all_passed']
+    certificate_case={
+        'uncapped_certificate':1.5,
+        'evidence_conditioned_bound':evidence_conditioned_bound(1.5,calibration_errors=[0.02],key_switch_loss=0.01),
+        'passed':evidence_conditioned_bound(1.5,calibration_errors=[0.02],key_switch_loss=0.01)==1.0,
+    }
+    envelope=AuthenticatedEnvelopeBackend(expression_binder)
+    envelope_key=b'e'*32
+    envelope_payload='11'*32
+    malformed=envelope.mark(envelope_key,make_demo_program(2),envelope_payload)
+    malformed['_threshold_carriers']=[1.5]
+    envelope_case={
+        'binder_ignores_threshold_field':expression_binder(malformed)==expression_binder(make_demo_program(2)),
+        'full_artifact_reader_rejects_noncanonical_float':envelope.read(envelope_key,malformed) is None,
+    }
+    compiler=ContextMarkCompiler.deterministic(['builder'],chain_id='runtime-boundary')
+    chain,artifact=compiler.issue([],make_demo_program(2),actor='builder',operation='compile')
+    compiler.binder=lambda _artifact: (_ for _ in ()).throw(RuntimeError('injected binder failure'))
+    runtime_case={'binder_runtime_rejected':not compiler.verify(chain,artifact)}
+    result={'schema':'tdsc-assurance-checks-v2','closure_rows':closure,'closure_count':len(closure),'closure_all_passed':all(r['passed'] for r in closure),'small_field_assignments':assignments,'polynomial_equivalence_mismatches':mismatches,'threshold_parameter_pairs':supported,'threshold_pair_count':len(supported),'threshold_pairs_all_passed':all(r['passed'] for r in supported),'product_certificate_counterexample':product_case,'certificate_saturation_boundary':certificate_case,'envelope_full_artifact_boundary':envelope_case,'public_verifier_runtime_boundary':runtime_case}
+    result['passed']=result['closure_all_passed'] and not mismatches and result['threshold_pairs_all_passed'] and certificate_case['passed'] and all(envelope_case.values()) and all(runtime_case.values())
     return result

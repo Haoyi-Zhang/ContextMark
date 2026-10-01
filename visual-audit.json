@@ -1,14 +1,14 @@
 {
-  "schema": "tdsc-visual-audit",
-  "generated_utc": "2026-09-24T08:50:42Z",
+  "schema": "tdsc-visual-audit-v4",
+  "generated_utc": "2026-09-26T09:32:28Z",
   "status": "PASS",
   "documents": {
     "paper/main.pdf": {
-      "sha256": "a7f7fe279267242bdd970e47a5b49f2ffecd153d91ad6322b5de71a4811370df",
+      "sha256": "62390f770b190a4f87e9b72096fd18cf1b89a9478cdef81ffa6f24d783c24476",
       "pages": 14
     },
     "paper/supplement.pdf": {
-      "sha256": "3885d9ff6b323fdbddf193c5e8db1521defef056f08501251f48447f4204a127",
+      "sha256": "cad990f67a03455cdaa8b90d59409ff7c63ebc9ee082defde55f201bf31837c0",
       "pages": 11
     }
   },
@@ -18,6 +18,10 @@
   ],
   "dpi": 200,
   "pages_inspected": 25,
+  "contact_sheets_inspected": [
+    "main-contact.jpg",
+    "supp-contact.jpg"
+  ],
   "publication_size_pages_inspected": {
     "main": [
       1,
@@ -29,19 +33,19 @@
     ],
     "supplement": [
       1,
-      7,
+      5,
+      8,
       9,
       10,
       11
     ]
   },
-  "core_figure_checks": {
-    "figure_1": "PASS_SEPARATED_RECORD_AND_ARTIFACT_LANES_OPEN_VERTICAL_INTERFACE_CORRIDORS_NO_TEXT_MODULE_OR_LINE_COLLISION",
-    "figure_2": "PASS_FOUR_ALIGNED_PANELS_NO_TITLE_TICK_OR_CURVE_COLLISION",
-    "figure_3": "PASS_COMMON_HYBRID_TWO_DEPENDENCY_BRANCHES_FOUR_TERMINAL_CARDS_NO_CROSSING_CONNECTORS",
-    "figure_4": "PASS_TRANSPARENT_LABEL_AND_LEGEND_NO_CURVE_OCCLUSION",
-    "figure_5": "PASS_TRANSPARENT_LEGENDS_DISTINCT_MARKS_AND_NO_FRAME_COLLISION",
-    "equations_3_4": "PASS_COMPACT_MATHEMATICAL_DOMAIN_CONSTANTS"
+  "figure_checks": {
+    "figure_1": "PASS_EXISTING_TWO_LANE_DESIGN; LEFT_LABELS, MODULES, INTERFACE_TEXT, AND ORTHOGONAL EDGES DO NOT OVERLAP",
+    "figure_2": "PASS_FOUR_PANELS; TITLES, TICKS, AND CURVES SEPARATE",
+    "figure_3": "PASS_COMMON_HYBRID_CONNECTS_TO_TWO_BRANCHES_AND_FOUR TERMINAL EVENTS; NO CROSSING THROUGH TEXT",
+    "figure_4": "PASS_TRANSPARENT ANALYTIC LABEL; NO CURVE OR GRID OCCLUSION",
+    "figure_5": "PASS_DISTINCT LINES AND MARKERS; NO LEGEND OR FRAME COLLISION"
   },
   "findings": {
     "text_or_formula_overlap": false,
@@ -57,5 +61,6 @@
     "renderer_specific_missing_content": false
   },
   "renderer_parity_maximum_unmatched_foreground_ratio": 0.0,
+  "design_change": "No figure was redrawn; only existing labels, spacing, and data-bound text were retained or locally corrected.",
   "verdict": "PASS_NO_OVERLAP_OCCLUSION_CLIPPING_BROKEN_GLYPH_BLANK_TAIL_OR_RENDERER_SPECIFIC_LOSS"
 }

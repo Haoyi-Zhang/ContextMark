@@ -1,4 +1,9 @@
 {
+  "certificate_saturation_boundary": {
+    "evidence_conditioned_bound": 1.0,
+    "passed": true,
+    "uncapped_certificate": 1.5
+  },
   "closure_all_passed": true,
   "closure_count": 128,
   "closure_rows": [
@@ -1027,6 +1032,10 @@
       "read_success": true
     }
   ],
+  "envelope_full_artifact_boundary": {
+    "binder_ignores_threshold_field": true,
+    "full_artifact_reader_rejects_noncanonical_float": true
+  },
   "passed": true,
   "polynomial_equivalence_mismatches": 0,
   "product_certificate_counterexample": {
@@ -1042,39 +1051,10 @@
       0.5
     ]
   },
-  "reader_timing": [
-    {
-      "legacy_subset_read_median_us": 11594.444,
-      "legacy_subsets": 10,
-      "legacy_timing_status": "measured",
-      "n": 5,
-      "residual_points": 2,
-      "residual_read_median_us": 793.644,
-      "runs": 31,
-      "t": 3
-    },
-    {
-      "legacy_subset_read_median_us": 865239.285,
-      "legacy_subsets": 252,
-      "legacy_timing_status": "measured",
-      "n": 10,
-      "residual_points": 5,
-      "residual_read_median_us": 3618.725,
-      "runs": 31,
-      "t": 5
-    },
-    {
-      "legacy_subset_read_median_us": null,
-      "legacy_subsets": 601080390,
-      "legacy_timing_status": "not_run_declared_combinatorial_boundary",
-      "n": 32,
-      "residual_points": 16,
-      "residual_read_median_us": 12860.016,
-      "runs": 31,
-      "t": 16
-    }
-  ],
-  "schema": "tdsc-assurance-checks",
+  "public_verifier_runtime_boundary": {
+    "binder_runtime_rejected": true
+  },
+  "schema": "tdsc-assurance-checks-v2",
   "small_field_assignments": 4802,
   "threshold_pair_count": 496,
   "threshold_pairs_all_passed": true,

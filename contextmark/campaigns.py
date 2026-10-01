@@ -19,8 +19,11 @@ from .threshold_backend import (
     ThresholdCarrierAdapter,
     binder as threshold_binder,
     mark as threshold_mark,
+    payload_commitment,
     public_authorized_derivative,
     read as threshold_read,
+    read_candidates,
+    trace_context_payloads,
 )
 
 
@@ -217,6 +220,62 @@ def resume_continuity_audit() -> dict[str, Any]:
     }
 
 
+def _candidate_selection_check(
+    expected_payloads: list[bytes],
+    actual_candidates: list[tuple[str, bytes]],
+    selected_payload: bytes | None,
+) -> dict[str, Any]:
+    """Check candidate-set equality and the scalar reader's canonical choice."""
+    expected = {payload_commitment(payload): payload for payload in expected_payloads}
+    actual = {commitment: payload for commitment, payload in actual_candidates}
+    expected_selected = expected[min(expected)] if expected else None
+    return {
+        "expected_payloads": [expected[key].hex() for key in sorted(expected)],
+        "actual_payloads": [actual[key].hex() for key in sorted(actual)],
+        "expected_selected": expected_selected.hex() if expected_selected is not None else "",
+        "actual_selected": selected_payload.hex() if selected_payload is not None else "",
+        "candidate_set_matches": actual == expected,
+        "canonical_selection_matches": selected_payload == expected_selected,
+        "passed": actual == expected and selected_payload == expected_selected,
+    }
+
+
+def _context_trace_check(
+    expected_contexts: list[str],
+    actual_contexts: list[str],
+    selected_context: str | None,
+) -> dict[str, Any]:
+    expected = sorted(set(expected_contexts))
+    actual = sorted(set(actual_contexts))
+    expected_selected = expected[0] if expected else None
+    return {
+        "expected_contexts": ";".join(expected),
+        "actual_contexts": ";".join(actual),
+        "expected_selected": expected_selected or "",
+        "actual_selected": selected_context or "",
+        "trace_set_matches": actual == expected,
+        "canonical_selection_matches": selected_context == expected_selected,
+        "passed": actual == expected and selected_context == expected_selected,
+    }
+
+
+def _trace_signed_tip_contexts(
+    compiler: ContextMarkCompiler,
+    gamma: list[dict[str, Any]],
+    candidate: dict[str, Any],
+) -> list[str]:
+    """Executable compiled trace predicate for a multi-context pattern Gamma."""
+    pairs: list[tuple[str, bytes]] = []
+    for entry in gamma:
+        record = entry["record"]
+        context = str(entry["context"])
+        compiler.validate_chain([record])
+        if record["context"] != context:
+            raise ContextMarkError("Gamma record does not authenticate its declared tip")
+        pairs.append((context, compiler.derive_watermark_key(context)))
+    return trace_context_payloads(pairs, candidate)
+
+
 def threshold_audit() -> dict[str, Any]:
     key = hashlib.sha256(b"threshold-audit-key").digest()
     base = make_demo_program(8)
@@ -232,9 +291,13 @@ def threshold_audit() -> dict[str, Any]:
         deletion_rows.append({
             "mask": "".join(map(str, bits)),
             "kept": sum(bits),
+            "actual_payload": recovered.hex() if recovered is not None else "",
+            "expected_payload": payloads[0].hex() if expected else "",
             "read_success": recovered == payloads[0],
             "expected_success": expected,
             "public_authorized": public_authorized_derivative(issued, candidate, threshold=3),
+            "passed": (recovered == payloads[0]) == expected
+            and public_authorized_derivative(issued, candidate, threshold=3) == expected,
         })
 
     # One changed field for each carrier and field family: 5 carriers x 5 mutations.
@@ -251,50 +314,125 @@ def threshold_audit() -> dict[str, Any]:
                 carrier[field] = 99
             else:
                 carrier[field] = "other"
+            actual = threshold_read(key, candidate)
             mutation_rows.append({
                 "position": position,
                 "field": field,
-                "still_reads": threshold_read(key, candidate) == payloads[0],
+                "actual_payload": actual.hex() if actual is not None else "",
+                "expected_payload": payloads[0].hex(),
+                "still_reads": actual == payloads[0],
+                "passed": actual == payloads[0],
             })
 
-    contributors = [threshold_mark(key, base, payload, n=4, t=3) for payload in payloads]
-    two_cells = three_cells = bad_two = bad_three = canonical_multi = 0
+    # Same-key/multi-payload semantics are a backend stress test, not the
+    # compiler's default key schedule.  Candidate-set recovery and scalar
+    # canonical selection are checked separately.
+    shared_contributors = [threshold_mark(key, base, payload, n=4, t=3) for payload in payloads[:2]]
+    shared_key_rows = []
     for masks in product(range(16), repeat=2):
-        candidate = deepcopy(base); candidate[CARRIER_FIELD] = []
-        present = []
+        candidate = deepcopy(base)
+        candidate[CARRIER_FIELD] = []
+        expected_payloads: list[bytes] = []
         for group, mask in enumerate(masks):
-            chosen = [c for index, c in enumerate(contributors[group][CARRIER_FIELD]) if mask & (1 << index)]
+            chosen = [
+                carrier for index, carrier in enumerate(shared_contributors[group][CARRIER_FIELD])
+                if mask & (1 << index)
+            ]
             candidate[CARRIER_FIELD].extend(deepcopy(chosen))
             if len(chosen) >= 3:
-                present.append(payloads[group])
-        result = threshold_read(key, candidate)
-        if result is not None and result not in present:
-            bad_two += 1
-        if len(present) > 1 and result in present:
-            canonical_multi += 1
-        two_cells += 1
-    for masks in product(range(16), repeat=3):
-        candidate = deepcopy(base); candidate[CARRIER_FIELD] = []
-        present = []
-        for group, mask in enumerate(masks):
-            chosen = [c for index, c in enumerate(contributors[group][CARRIER_FIELD]) if mask & (1 << index)]
-            candidate[CARRIER_FIELD].extend(deepcopy(chosen))
-            if len(chosen) >= 3:
-                present.append(payloads[group])
-        result = threshold_read(key, candidate)
-        if result is not None and result not in present:
-            bad_three += 1
-        three_cells += 1
+                expected_payloads.append(payloads[group])
+        check = _candidate_selection_check(
+            expected_payloads,
+            read_candidates(key, candidate),
+            threshold_read(key, candidate),
+        )
+        shared_key_rows.append({
+            "masks": ";".join(f"{mask:04b}" for mask in masks),
+            **check,
+        })
+
+    # Actual compiler instantiation: each signed context d_j has its own
+    # derived key k_j and exact tip payload d_j.  Gamma contains the signed
+    # singleton records; Trace_Gamma returns precisely those contexts whose own
+    # key recovers that signed payload from the mixed candidate.
+    adapter = ThresholdCarrierAdapter(n=4, t=3)
+    compiler = ContextMarkCompiler.deterministic(
+        ["builder"],
+        seed=20260718,
+        chain_id="compiled-coalition-audit",
+        binder=threshold_binder,
+        backend=adapter,
+    )
+    gamma: list[dict[str, Any]] = []
+    compiler_artifacts: list[dict[str, Any]] = []
+    for group in range(3):
+        chain, artifact = compiler.issue(
+            [],
+            base,
+            actor="builder",
+            operation="issue-copy",
+            metadata={"issue_id": f"gamma-{group}", "group": group},
+        )
+        gamma.append({"context": chain[-1]["context"], "record": deepcopy(chain[-1])})
+        compiler_artifacts.append(deepcopy(artifact))
+
+    coalition_rows = []
+    for contributor_count in (2, 3):
+        for masks in product(range(16), repeat=contributor_count):
+            candidate = deepcopy(base)
+            candidate[CARRIER_FIELD] = []
+            expected_contexts: list[str] = []
+            for group, mask in enumerate(masks):
+                chosen = [
+                    carrier for index, carrier in enumerate(compiler_artifacts[group][CARRIER_FIELD])
+                    if mask & (1 << index)
+                ]
+                candidate[CARRIER_FIELD].extend(deepcopy(chosen))
+                if len(chosen) >= 3:
+                    expected_contexts.append(gamma[group]["context"])
+            actual_contexts = _trace_signed_tip_contexts(compiler, gamma[:contributor_count], candidate)
+            actual_selected = actual_contexts[0] if actual_contexts else None
+            check = _context_trace_check(expected_contexts, actual_contexts, actual_selected)
+            coalition_rows.append({
+                "contributor_count": contributor_count,
+                "masks": ";".join(f"{mask:04b}" for mask in masks),
+                **check,
+            })
+
+    gamma_summary = [
+        {
+            "context": entry["context"],
+            "record_signature": entry["record"]["signature"],
+            "record_valid": True,
+            "payload_rule": "exact signed-tip context bytes",
+            "key_rule": "compiler-derived key for this context",
+        }
+        for entry in gamma
+    ]
+    passed = (
+        all(row["passed"] for row in deletion_rows)
+        and all(row["still_reads"] and row["passed"] for row in mutation_rows)
+        and all(row["passed"] for row in shared_key_rows)
+        and all(row["passed"] for row in coalition_rows)
+    )
     return {
         "deletion_rows": deletion_rows,
         "single_mutation_rows": mutation_rows,
+        "shared_key_rows": shared_key_rows,
+        "coalition_rows": coalition_rows,
+        "gamma": gamma_summary,
         "deletion_cases": len(deletion_rows),
         "single_mutation_cases": len(mutation_rows),
-        "two_contributor_cells": two_cells,
-        "three_contributor_cells": three_cells,
-        "noncontributor_two": bad_two,
-        "noncontributor_three": bad_three,
-        "canonical_multi_candidate_returns": canonical_multi,
-        "passed": all(row["read_success"] == row["expected_success"] == row["public_authorized"] for row in deletion_rows)
-        and bad_two == 0 and bad_three == 0,
+        "single_mutations_all_still_read": all(row["still_reads"] for row in mutation_rows),
+        "shared_key_two_group_cells": len(shared_key_rows),
+        "shared_key_candidate_set_mismatches": sum(not row["candidate_set_matches"] for row in shared_key_rows),
+        "shared_key_canonical_selection_mismatches": sum(not row["canonical_selection_matches"] for row in shared_key_rows),
+        "two_contributor_cells": sum(row["contributor_count"] == 2 for row in coalition_rows),
+        "three_contributor_cells": sum(row["contributor_count"] == 3 for row in coalition_rows),
+        "coalition_cells": len(coalition_rows),
+        "coalition_trace_mismatches": sum(not row["trace_set_matches"] for row in coalition_rows),
+        "coalition_canonical_selection_mismatches": sum(not row["canonical_selection_matches"] for row in coalition_rows),
+        "trace_contract": "Gamma binds each valid signed tip d_j to its compiler-derived key k_j; Trace_Gamma(Y) is the set of j for which Read_{k_j}(Y)=d_j; a scalar contributor is the lexicographically smallest traced context",
+        "passed": passed,
     }
+

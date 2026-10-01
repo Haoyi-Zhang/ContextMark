@@ -1,14 +1,14 @@
 {
-  "schema": "tdsc-visible-text-audit",
-  "generated_utc": "2026-09-24T08:50:42Z",
+  "schema": "tdsc-visible-text-audit-v4",
+  "generated_utc": "2026-09-26T09:32:28Z",
   "status": "PASS",
   "documents": [
-    "main",
-    "supplement"
+    "paper/main.pdf",
+    "paper/supplement.pdf"
   ],
   "document_sha256": {
-    "paper/main.pdf": "a7f7fe279267242bdd970e47a5b49f2ffecd153d91ad6322b5de71a4811370df",
-    "paper/supplement.pdf": "3885d9ff6b323fdbddf193c5e8db1521defef056f08501251f48447f4204a127"
+    "paper/main.pdf": "62390f770b190a4f87e9b72096fd18cf1b89a9478cdef81ffa6f24d783c24476",
+    "paper/supplement.pdf": "cad990f67a03455cdaa8b90d59409ff7c63ebc9ee082defde55f201bf31837c0"
   },
   "allowed_author_emails": [
     "huaijin003@e.ntu.edu.sg",
@@ -27,7 +27,7 @@
   "findings": {
     "local_path": [],
     "file_extension": [],
-    "private_process_terms": [],
+    "private_prompt_terms": [],
     "implementation_identifiers": [],
     "double_underscore": [],
     "literal_underscore": [],

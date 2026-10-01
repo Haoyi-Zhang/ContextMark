@@ -12,6 +12,7 @@ import statistics
 import subprocess
 import sys
 import time
+from itertools import combinations
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -42,14 +43,20 @@ from contextmark.finite_model import (
     validate_omission_matrix,
     validate_safeguard_lattice,
 )
-from contextmark.threshold_backend import ThresholdCarrierAdapter, binder as threshold_binder
+import contextmark.threshold_backend as threshold_backend
+from contextmark.threshold_backend import (
+    ThresholdCarrierAdapter,
+    binder as threshold_binder,
+    read as threshold_read,
+    read_candidates,
+)
 
 ROOT = Path(__file__).resolve().parent
 RAW = ROOT / "results" / "raw"
 DERIVED = ROOT / "results" / "derived"
 SEED = 20260718
 GAMES = ("removal", "nontransfer", "unforgeability", "collusion")
-EXPECTED_TESTS = 81
+EXPECTED_TESTS = 89
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -169,13 +176,30 @@ def run_structural_campaigns() -> dict[str, Any]:
         name: sum(row["attack_succeeds"] for row in baselines if row["configuration"] == name)
         for name in ("detached_records", "host_bound_owner_mark", "signed_owner_mark", "context_mark_without_parents", "complete")
     }
-    write_json(RAW / "architecture-baseline-summary.json", baseline_counts)
+    write_json(RAW / "architecture-baseline-summary.json", {
+        "schema": "factorized-architecture-truth-table-v1",
+        "evidence_kind": "truth_table_consistency",
+        "shared_rule": "REQUIRED",
+        "independent_interaction_evidence": False,
+        "successful_attack_counts": baseline_counts,
+        "limitation": "The five rows are named configurations of the same six-Boolean evaluator, not independent mechanism executions.",
+    })
 
     threshold = threshold_audit()
     deletion_rows = threshold.pop("deletion_rows")
     mutation_rows = threshold.pop("single_mutation_rows")
+    shared_key_rows = threshold.pop("shared_key_rows")
+    coalition_rows = threshold.pop("coalition_rows")
+    gamma = threshold.pop("gamma")
     write_csv(RAW / "threshold-deletion-authorization.csv", deletion_rows)
     write_csv(RAW / "threshold-single-mutations.csv", mutation_rows)
+    write_csv(RAW / "threshold-shared-key-candidate-cells.csv", shared_key_rows)
+    write_csv(RAW / "threshold-coalition-cells.csv", coalition_rows)
+    write_json(RAW / "threshold-compiled-gamma.json", {
+        "schema": "contextmark-compiled-coalition-gamma-v1",
+        "entries": gamma,
+        "trace_rule": threshold["trace_contract"],
+    })
     write_json(RAW / "threshold-audit-summary.json", threshold)
 
     terminal = terminal_failure_audit()
@@ -282,16 +306,24 @@ def build_session_chain(chain_length: int, sample: int):
     actors = ["builder", "reviewer", "packager", "release"]
     compiler = ContextMarkCompiler.deterministic(actors, seed=SEED, chain_id=f"session-{chain_length}-{sample}")
     session = compiler.begin_session(make_demo_program(16))
-    started = time.perf_counter_ns()
+    total_started = time.perf_counter_ns()
+    append_started = total_started
     for index in range(chain_length):
         session.append_private(
             actor=actors[index % len(actors)],
             operation=f"stage-{index}",
             metadata={"issue_id": f"s-{chain_length}-{sample}-{index}", "policy": "v1"},
         )
-    elapsed_us = (time.perf_counter_ns() - started) / 1000
+    append_us = (time.perf_counter_ns() - append_started) / 1000
+    export_started = time.perf_counter_ns()
     chain, artifact = session.snapshot()
-    return compiler, chain, artifact, elapsed_us
+    export_us = (time.perf_counter_ns() - export_started) / 1000
+    end_to_end_us = (time.perf_counter_ns() - total_started) / 1000
+    return compiler, chain, artifact, {
+        "append_only_us": append_us,
+        "snapshot_export_us": export_us,
+        "end_to_end_us": end_to_end_us,
+    }
 
 
 def build_replay_chain(chain_length: int, sample: int):
@@ -312,65 +344,138 @@ def build_replay_chain(chain_length: int, sample: int):
     return compiler, chain, artifact, elapsed_us
 
 
-def run_compiler_benchmark() -> list[dict[str, Any]]:
-    chain_lengths = (1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048)
-    aggregate = []
-    samples = []
-    for length in chain_lengths:
-        print(f"benchmark depth={length}", flush=True)
-        session_total = []
-        session_per_stage = []
-        for sample in range(31):
-            _compiler, chain, artifact, elapsed_us = build_session_chain(length, sample)
-            session_total.append(elapsed_us)
-            session_per_stage.append(elapsed_us / length)
-            samples.append({"chain_length": length, "sample_kind": "validated_tip_total", "sample_index": sample, "elapsed_us": elapsed_us})
-        replay_total = []
-        if length <= 256:
-            for sample in range(7):
-                _compiler, chain, artifact, elapsed_us = build_replay_chain(length, sample)
-                replay_total.append(elapsed_us)
-                samples.append({"chain_length": length, "sample_kind": "full_prefix_replay_total", "sample_index": sample, "elapsed_us": elapsed_us})
-        compiler, chain, artifact, _ = build_session_chain(length, 999)
-        for _ in range(10):
+BENCHMARK_DEPTHS = (1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048)
+
+
+def run_compiler_benchmark_depth(length: int) -> dict[str, Any]:
+    """Measure one frozen chain depth in an isolated process invocation.
+
+    Every session sample is timed through one exported full chain and tip
+    artifact.  Append-only and final-export components are retained separately.
+    Each one of the 31 session exports and, where applicable, all seven replay
+    exports is verified once outside its construction interval.
+    """
+    if length not in BENCHMARK_DEPTHS:
+        raise ValueError(f"unregistered benchmark depth: {length}")
+    session_total: list[float] = []
+    session_append: list[float] = []
+    session_export: list[float] = []
+    session_per_stage: list[float] = []
+    verify: list[float] = []
+    serialize: list[float] = []
+    manifest_sizes: list[int] = []
+    artifact_sizes: list[int] = []
+    samples: list[dict[str, Any]] = []
+    session_verified = 0
+    for sample in range(31):
+        compiler, chain, artifact, timing = build_session_chain(length, sample)
+        elapsed_us = float(timing["end_to_end_us"])
+        session_total.append(elapsed_us)
+        session_append.append(float(timing["append_only_us"]))
+        session_export.append(float(timing["snapshot_export_us"]))
+        session_per_stage.append(elapsed_us / length)
+        samples.extend([
+            {"chain_length": length, "sample_kind": "validated_tip_end_to_end", "sample_index": sample, "elapsed_us": elapsed_us},
+            {"chain_length": length, "sample_kind": "validated_tip_append_only", "sample_index": sample, "elapsed_us": timing["append_only_us"]},
+            {"chain_length": length, "sample_kind": "validated_tip_snapshot_export", "sample_index": sample, "elapsed_us": timing["snapshot_export_us"]},
+        ])
+        started = time.perf_counter_ns()
+        accepted = compiler.verify(chain, artifact)
+        verify_elapsed = (time.perf_counter_ns() - started) / 1000
+        if not accepted:
+            raise RuntimeError(f"session export failed verification at depth={length}, sample={sample}")
+        session_verified += 1
+        verify.append(verify_elapsed)
+        samples.append({"chain_length": length, "sample_kind": "verify_distinct_session_export", "sample_index": sample, "elapsed_us": verify_elapsed})
+        started = time.perf_counter_ns()
+        manifest = compiler.serialize_manifest(chain)
+        serialize_elapsed = (time.perf_counter_ns() - started) / 1000
+        serialize.append(serialize_elapsed)
+        manifest_sizes.append(len(manifest))
+        artifact_sizes.append(len(compiler.serialize_artifact(artifact)))
+        samples.append({"chain_length": length, "sample_kind": "serialize_distinct_session_export", "sample_index": sample, "elapsed_us": serialize_elapsed})
+
+    replay_total: list[float] = []
+    replay_verified = 0
+    if length <= 256:
+        for sample in range(7):
+            compiler, chain, artifact, elapsed_us = build_replay_chain(length, sample)
+            replay_total.append(elapsed_us)
+            samples.append({"chain_length": length, "sample_kind": "full_prefix_replay_end_to_end", "sample_index": sample, "elapsed_us": elapsed_us})
             if not compiler.verify(chain, artifact):
-                raise RuntimeError("warm-up verification failed")
-            compiler.serialize_manifest(chain)
-        verify = []
-        serialize = []
-        for sample in range(31):
-            started = time.perf_counter_ns()
-            accepted = compiler.verify(chain, artifact)
-            elapsed = (time.perf_counter_ns() - started) / 1000
-            if not accepted:
-                raise RuntimeError("benchmark verification failed")
-            verify.append(elapsed)
-            samples.append({"chain_length": length, "sample_kind": "verify", "sample_index": sample, "elapsed_us": elapsed})
-            started = time.perf_counter_ns()
-            manifest = compiler.serialize_manifest(chain)
-            elapsed = (time.perf_counter_ns() - started) / 1000
-            serialize.append(elapsed)
-            samples.append({"chain_length": length, "sample_kind": "serialize", "sample_index": sample, "elapsed_us": elapsed})
-        row = {
-            "chain_length": length,
-            "session_samples": len(session_total),
-            "median_validated_tip_total_us": statistics.median(session_total),
-            "p95_validated_tip_total_us": percentile(session_total, 0.95),
-            "median_validated_tip_us_per_stage": statistics.median(session_per_stage),
-            "replay_samples": len(replay_total),
-            "median_replay_total_us": statistics.median(replay_total) if replay_total else "",
-            "replay_to_tip_speedup": (statistics.median(replay_total) / statistics.median(session_total)) if replay_total else "",
-            "verify_samples": len(verify),
-            "median_verify_us": statistics.median(verify),
-            "p95_verify_us": percentile(verify, 0.95),
-            "serialize_samples": len(serialize),
-            "median_serialize_us": statistics.median(serialize),
-            "p95_serialize_us": percentile(serialize, 0.95),
-            "manifest_bytes": len(manifest),
-            "artifact_bytes": len(compiler.serialize_artifact(artifact)),
-            "all_verifications_passed": True,
-        }
+                raise RuntimeError(f"replay export failed verification at depth={length}, sample={sample}")
+            replay_verified += 1
+
+    if session_verified != 31 or (length <= 256 and replay_verified != 7):
+        raise RuntimeError("not every exported construction was verified")
+    row = {
+        "chain_length": length,
+        "construction_boundary": "end-to-end construction through one exported full chain and tip artifact",
+        "session_samples": len(session_total),
+        "session_exports_verified": session_verified,
+        "median_validated_tip_total_us": statistics.median(session_total),
+        "p95_validated_tip_total_us": percentile(session_total, 0.95),
+        "median_validated_tip_append_only_us": statistics.median(session_append),
+        "p95_validated_tip_append_only_us": percentile(session_append, 0.95),
+        "median_validated_tip_snapshot_export_us": statistics.median(session_export),
+        "p95_validated_tip_snapshot_export_us": percentile(session_export, 0.95),
+        "median_validated_tip_us_per_stage": statistics.median(session_per_stage),
+        "replay_samples": len(replay_total),
+        "replay_exports_verified": replay_verified,
+        "median_replay_total_us": statistics.median(replay_total) if replay_total else "",
+        "p95_replay_total_us": percentile(replay_total, 0.95) if replay_total else "",
+        "replay_to_tip_speedup": (statistics.median(replay_total) / statistics.median(session_total)) if replay_total else "",
+        "verify_samples": len(verify),
+        "verify_sample_definition": "one verification for each distinct session export",
+        "median_verify_us": statistics.median(verify),
+        "p95_verify_us": percentile(verify, 0.95),
+        "serialize_samples": len(serialize),
+        "serialize_sample_definition": "one serialization for each distinct session export",
+        "median_serialize_us": statistics.median(serialize),
+        "p95_serialize_us": percentile(serialize, 0.95),
+        "manifest_bytes": int(statistics.median(manifest_sizes)),
+        "manifest_bytes_min": min(manifest_sizes),
+        "manifest_bytes_max": max(manifest_sizes),
+        "artifact_bytes": int(statistics.median(artifact_sizes)),
+        "artifact_bytes_min": min(artifact_sizes),
+        "artifact_bytes_max": max(artifact_sizes),
+        "all_verifications_passed": True,
+    }
+    shard = {
+        "schema": "contextmark-compiler-benchmark-shard-v2",
+        "depth": length,
+        "frozen_plan": {
+            "session_samples": 31,
+            "replay_samples": 7 if length <= 256 else 0,
+            "verify_samples": 31,
+            "serialize_samples": 31,
+            "construction_boundary": row["construction_boundary"],
+            "verification_outside_construction_timing": True,
+        },
+        "row": row,
+        "samples": samples,
+    }
+    write_json(RAW / "benchmark-shards" / f"depth-{length}.json", shard)
+    return shard
+
+
+def aggregate_compiler_benchmark() -> list[dict[str, Any]]:
+    aggregate: list[dict[str, Any]] = []
+    samples: list[dict[str, Any]] = []
+    for length in BENCHMARK_DEPTHS:
+        path = RAW / "benchmark-shards" / f"depth-{length}.json"
+        if not path.exists():
+            raise RuntimeError(f"missing frozen benchmark shard: {path.relative_to(ROOT)}")
+        shard = json.loads(path.read_text(encoding="utf-8"))
+        if shard.get("schema") != "contextmark-compiler-benchmark-shard-v2" or int(shard.get("depth", -1)) != length:
+            raise RuntimeError(f"invalid benchmark shard: {path.relative_to(ROOT)}")
+        row = shard["row"]
+        if row.get("session_exports_verified") != 31 or row.get("verify_samples") != 31:
+            raise RuntimeError(f"incomplete session verification evidence at depth {length}")
+        if length <= 256 and row.get("replay_exports_verified") != 7:
+            raise RuntimeError(f"incomplete replay verification evidence at depth {length}")
         aggregate.append(row)
+        samples.extend(shard["samples"])
     write_csv(RAW / "compiler-scaling-samples.csv", samples)
     write_csv(DERIVED / "compiler-scaling.csv", aggregate)
     write_csv(DERIVED / "compiler-replay-scaling.csv", [row for row in aggregate if row["replay_samples"]])
@@ -379,31 +484,46 @@ def run_compiler_benchmark() -> list[dict[str, Any]]:
 
 def run_threshold_timing() -> list[dict[str, Any]]:
     rows = []
+    samples = []
     base = make_demo_program(16)
     for groups in (1, 2, 3):
-        mark_times = []
-        read_times = []
+        mark_times: list[float] = []
+        read_times: list[float] = []
         for sample in range(31):
-            adapter = ThresholdCarrierAdapter(n=5, t=3)
-            compiler = ContextMarkCompiler.deterministic(
-                ["builder"],
-                seed=SEED + sample,
-                chain_id=f"threshold-timing-{groups}-{sample}",
-                binder=threshold_binder,
-                backend=adapter,
-            )
+            key = hashlib.sha256(f"timing-key-{groups}-{sample}".encode()).digest()
+            payloads = [
+                hashlib.sha256(f"timing-payload-{groups}-{sample}-{group}".encode()).digest()
+                for group in range(groups)
+            ]
             artifact = base
-            key = hashlib.sha256(f"timing-key-{sample}".encode()).digest()
             started = time.perf_counter_ns()
-            for group in range(groups):
-                payload = hashlib.sha256(f"timing-payload-{sample}-{group}".encode()).hexdigest()
-                artifact = adapter.mark(key, artifact, payload)
-            mark_times.append((time.perf_counter_ns() - started) / 1000)
+            for payload in payloads:
+                artifact = threshold_backend.mark(key, artifact, payload, n=5, t=3)
+            mark_us = (time.perf_counter_ns() - started) / 1000
             started = time.perf_counter_ns()
-            recovered = adapter.read(key, artifact)
-            read_times.append((time.perf_counter_ns() - started) / 1000)
-            if recovered is None:
-                raise RuntimeError("threshold timing read failed")
+            selected = threshold_read(key, artifact)
+            read_us = (time.perf_counter_ns() - started) / 1000
+            candidates = read_candidates(key, artifact)
+            expected_selected = min(
+                ((threshold_backend.payload_commitment(payload), payload) for payload in payloads),
+                key=lambda item: item[0],
+            )[1]
+            if {payload for _commitment, payload in candidates} != set(payloads):
+                raise RuntimeError("threshold timing candidate set mismatch")
+            if selected != expected_selected:
+                raise RuntimeError("threshold timing canonical read mismatch")
+            mark_times.append(mark_us)
+            read_times.append(read_us)
+            samples.append({
+                "payload_groups": groups,
+                "sample_index": sample,
+                "mark_total_us": mark_us,
+                "read_us": read_us,
+                "candidate_count": len(candidates),
+                "selected_payload": selected.hex(),
+                "expected_selected_payload": expected_selected.hex(),
+                "passed": True,
+            })
         rows.append({
             "payload_groups": groups,
             "samples": 31,
@@ -411,14 +531,101 @@ def run_threshold_timing() -> list[dict[str, Any]]:
             "p95_mark_total_us": percentile(mark_times, 0.95),
             "median_read_us": statistics.median(read_times),
             "p95_read_us": percentile(read_times, 0.95),
+            "all_candidate_sets_and_canonical_reads_passed": True,
         })
+    write_csv(RAW / "threshold-carrier-timing-samples.csv", samples)
     write_csv(DERIVED / "threshold-carrier-timing.csv", rows)
+    return rows
+
+
+def _subset_reader(key: bytes, artifact: dict[str, Any]) -> bytes | None:
+    """Exhaustive all-subset baseline for one authenticated payload group."""
+    carriers = threshold_backend._valid_carriers(key, artifact)
+    groups: dict[tuple[str, int, int], list[dict[str, Any]]] = {}
+    for carrier in carriers:
+        groups.setdefault((carrier["commitment"], carrier["n"], carrier["t"]), []).append(carrier)
+    candidates: list[tuple[str, bytes]] = []
+    for (commitment, _n, threshold), members in groups.items():
+        members.sort(key=lambda carrier: carrier["index"])
+        if len(members) < threshold:
+            continue
+        expected_secret = None
+        consistent = True
+        points = [(carrier["index"], int(carrier["value"], 16)) for carrier in members]
+        for subset in combinations(points, threshold):
+            secret = threshold_backend._interpolate(list(subset))
+            if expected_secret is None:
+                expected_secret = secret
+            elif secret != expected_secret:
+                consistent = False
+                break
+        if not consistent or expected_secret is None or expected_secret >= 1 << 256:
+            continue
+        payload = expected_secret.to_bytes(32, "big")
+        if threshold_backend.payload_commitment(payload) == commitment:
+            candidates.append((commitment, payload))
+    candidates.sort(key=lambda item: item[0])
+    return candidates[0][1] if candidates else None
+
+
+def run_residual_subset_timing() -> list[dict[str, Any]]:
+    rows = []
+    samples = []
+    base = make_demo_program(8)
+    for n, threshold in ((5, 3), (10, 5), (32, 16)):
+        residual_times: list[float] = []
+        subset_times: list[float] = []
+        for sample in range(31):
+            key = hashlib.sha256(f"residual-key-{n}-{threshold}-{sample}".encode()).digest()
+            payload = hashlib.sha256(f"residual-payload-{n}-{threshold}-{sample}".encode()).digest()
+            artifact = threshold_backend.mark(key, base, payload, n=n, t=threshold)
+            started = time.perf_counter_ns()
+            residual = threshold_read(key, artifact)
+            residual_us = (time.perf_counter_ns() - started) / 1000
+            if residual != payload:
+                raise RuntimeError("residual reader timing produced a wrong payload")
+            subset_us: float | str = ""
+            subset_status = "not_run_declared_combinatorial_boundary"
+            if (n, threshold) != (32, 16):
+                started = time.perf_counter_ns()
+                subset = _subset_reader(key, artifact)
+                subset_us = (time.perf_counter_ns() - started) / 1000
+                if subset != payload:
+                    raise RuntimeError("subset baseline timing produced a wrong payload")
+                subset_times.append(float(subset_us))
+                subset_status = "measured"
+            residual_times.append(residual_us)
+            samples.append({
+                "n": n,
+                "t": threshold,
+                "sample_index": sample,
+                "legacy_subsets": __import__("math").comb(n, threshold),
+                "residual_read_us": residual_us,
+                "subset_read_us": subset_us,
+                "subset_status": subset_status,
+                "residual_payload_correct": True,
+                "subset_payload_correct": True if subset_status == "measured" else "",
+            })
+        rows.append({
+            "n": n,
+            "t": threshold,
+            "samples": 31,
+            "legacy_subsets": __import__("math").comb(n, threshold),
+            "residual_points": n - threshold,
+            "residual_read_median_us": statistics.median(residual_times),
+            "residual_read_p95_us": percentile(residual_times, 0.95),
+            "subset_read_median_us": statistics.median(subset_times) if subset_times else "",
+            "subset_read_p95_us": percentile(subset_times, 0.95) if subset_times else "",
+            "subset_timing_status": "measured" if subset_times else "not_run_declared_combinatorial_boundary",
+        })
+    write_csv(RAW / "residual-subset-timing-samples.csv", samples)
+    write_csv(DERIVED / "residual-subset-timing.csv", rows)
     return rows
 
 
 def build_run_manifest() -> dict[str, Any]:
     manifest_path = RAW / "run-manifest.json"
-    paths = [ROOT / "requirements.txt", ROOT / "run_experiments.py"]
+    paths = [ROOT / "requirements.txt", ROOT / "run_experiments.py", ROOT / "run_experiments_sharded.sh"]
     paths.extend((ROOT / "contextmark").glob("*.py"))
     paths.extend((ROOT / "tests").glob("*.py"))
     paths.extend(path for path in (ROOT / "results").rglob("*") if path.is_file() and path != manifest_path)
@@ -432,7 +639,7 @@ def build_run_manifest() -> dict[str, Any]:
     manifest = {
         "schema": "contextmark-run-manifest",
         "seed": SEED,
-        "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python run_experiments.py",
+        "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. sh run_experiments_sharded.sh",
         "entry_count": len(entries),
         "entries": entries,
     }
@@ -440,7 +647,7 @@ def build_run_manifest() -> dict[str, Any]:
     return manifest
 
 
-def main() -> int:
+def prepare_experiments() -> dict[str, Any]:
     for directory in (RAW, DERIVED):
         if directory.exists():
             shutil.rmtree(directory)
@@ -456,10 +663,8 @@ def main() -> int:
         raise RuntimeError("assurance regression campaign failed")
     write_json(RAW / "proof-implementation-checks.json", assurance)
     bounds = run_bound_curves()
-    scaling = run_compiler_benchmark()
-    threshold_timing = run_threshold_timing()
-    summary = {
-        "schema": "contextmark-experiment-summary",
+    prepared = {
+        "schema": "contextmark-prepared-evidence-v2",
         "environment": environment,
         "tests": tests,
         "structural_campaigns": structural,
@@ -467,16 +672,67 @@ def main() -> int:
         "exact_probability_m20_elapsed_ms": float(exact[-1]["elapsed_ms"]),
         "calibration": calibration,
         "query_caps": bounds["integer_query_caps"],
+        "assurance_checks": {k: v for k, v in assurance.items() if k not in {"closure_rows", "threshold_parameter_pairs"}},
+        "benchmark_depths": list(BENCHMARK_DEPTHS),
+    }
+    write_json(RAW / "prepared-summary.json", prepared)
+    return prepared
+
+
+def finalize_experiments() -> dict[str, Any]:
+    prepared_path = RAW / "prepared-summary.json"
+    if not prepared_path.exists():
+        raise RuntimeError("prepare step has not been executed")
+    prepared = json.loads(prepared_path.read_text(encoding="utf-8"))
+    scaling = aggregate_compiler_benchmark()
+    threshold_timing = run_threshold_timing()
+    residual_subset_timing = run_residual_subset_timing()
+    summary = {
+        "schema": "contextmark-experiment-summary-v2",
+        "environment": prepared["environment"],
+        "tests": prepared["tests"],
+        "structural_campaigns": prepared["structural_campaigns"],
+        "exact_probability_max_error": prepared["exact_probability_max_error"],
+        "exact_probability_m20_elapsed_ms": prepared["exact_probability_m20_elapsed_ms"],
+        "calibration": prepared["calibration"],
+        "query_caps": prepared["query_caps"],
         "compiler_scaling": scaling,
         "threshold_timing": threshold_timing,
-        "assurance_checks": {k: v for k, v in assurance.items() if k not in {"closure_rows", "threshold_parameter_pairs"}},
+        "residual_subset_timing": residual_subset_timing,
+        "assurance_checks": prepared["assurance_checks"],
     }
     write_json(RAW / "run-summary.json", summary)
     manifest = build_run_manifest()
     print(json.dumps(summary, indent=2, sort_keys=True))
     print(f"run_manifest_entries={manifest['entry_count']}")
+    return summary
+
+
+def main() -> int:
+    prepare_experiments()
+    for depth in BENCHMARK_DEPTHS:
+        print(f"benchmark depth={depth}", flush=True)
+        run_compiler_benchmark_depth(depth)
+    finalize_experiments()
     return 0
 
 
+def dispatch() -> int:
+    if len(sys.argv) == 1:
+        return main()
+    if sys.argv[1:] == ["--prepare"]:
+        prepare_experiments()
+        return 0
+    if len(sys.argv) == 3 and sys.argv[1] == "--benchmark-depth":
+        depth = int(sys.argv[2])
+        shard = run_compiler_benchmark_depth(depth)
+        print(json.dumps({"depth": depth, "row": shard["row"]}, indent=2, sort_keys=True))
+        return 0
+    if sys.argv[1:] == ["--finalize"]:
+        finalize_experiments()
+        return 0
+    raise SystemExit("usage: run_experiments.py [--prepare | --benchmark-depth N | --finalize]")
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(dispatch())

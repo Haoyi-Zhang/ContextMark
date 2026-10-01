@@ -71,7 +71,16 @@ def validate_omission_matrix(rows: list[dict[str, Any]] | None = None) -> dict[s
         wins = [row["attack"] for row in rows if row["configuration"] == config and row["attack_succeeds"]]
         expected[config] = wins
     valid = len(rows) == 42 and complete_wins == 0 and all(wins == [attack] for attack, wins in zip(ATTACKS, expected.values()))
-    return {"row_count": len(rows), "complete_successful_attacks": complete_wins, "weakened_successes": expected, "valid": valid}
+    return {
+        "schema": "factorized-truth-table-consistency-v1",
+        "evidence_kind": "truth_table_consistency",
+        "shared_rule": "REQUIRED",
+        "independent_interaction_evidence": False,
+        "row_count": len(rows),
+        "complete_successful_attacks": complete_wins,
+        "weakened_successes": expected,
+        "valid": valid,
+    }
 
 
 def safeguard_lattice() -> list[dict[str, Any]]:
@@ -99,7 +108,17 @@ def validate_safeguard_lattice(rows: list[dict[str, Any]] | None = None) -> dict
             for upper, upper_success in by_bits.items():
                 if all((not l) or u for l, u in zip(lower, upper)) and not lower_success and upper_success:
                     violations += 1
-    return {"row_count": len(rows), "configuration_count": 64, "attack_count": 6, "monotonicity_violations": violations, "valid": len(rows) == 384 and violations == 0}
+    return {
+        "schema": "factorized-truth-table-consistency-v1",
+        "evidence_kind": "truth_table_consistency",
+        "shared_rule": "REQUIRED",
+        "independent_interaction_evidence": False,
+        "row_count": len(rows),
+        "configuration_count": 64,
+        "attack_count": 6,
+        "monotonicity_violations": violations,
+        "valid": len(rows) == 384 and violations == 0,
+    }
 
 
 def architectural_baselines() -> list[Configuration]:

@@ -88,7 +88,16 @@ def evidence_conditioned_bound(
     calibration_errors: Iterable[float] = (),
     key_switch_loss: float = 0.0,
 ) -> float:
-    _validate_probability(risk_certificate, "risk_certificate")
+    """Cap a nonnegative certificate plus probability-valued error terms.
+
+    A first-hit certificate is an expectation of a sum of upper hazards.  It is
+    therefore allowed to exceed one even though the resulting adversarial
+    advantage is a probability.  Reject only negative or non-finite
+    certificates, validate the actual probability terms, and cap once at the
+    end.
+    """
+    if not math.isfinite(risk_certificate) or risk_certificate < 0.0:
+        raise ValueError("risk_certificate must be finite and nonnegative")
     _validate_probability(key_switch_loss, "key_switch_loss")
     total = risk_certificate + key_switch_loss
     for index, error in enumerate(calibration_errors):

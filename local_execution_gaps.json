@@ -1,27 +1,13 @@
 {
-  "schema": "tdsc-local-execution-gaps",
-  "generated_utc": "2026-09-24T08:36:48Z",
+  "schema": "tdsc-local-execution-gaps-v2",
+  "generated_utc": "2026-09-26T09:27:49Z",
   "gaps": [
     {
-      "gap": "production_attestation_baseline",
-      "attempt": "Pinned in-toto release metadata and verifier source were inspected; local dependency acquisition was attempted.",
+      "gap": "pinned_in_toto_dependency",
+      "attempt": "Pinned in-toto release metadata and verifier source were inspected and local dependency acquisition was attempted.",
       "reason": "The required pinned dependency was unavailable in the current execution environment.",
-      "claim_control": "No in-toto execution, latency, or robustness score is claimed.",
+      "claim_control": "No in-toto execution, latency, attack result, or robustness score is claimed.",
       "required_external_action": "Run the documented adapter and attacks in an environment that can acquire the pinned dependency."
-    },
-    {
-      "gap": "production_watermark_backend",
-      "attempt": "The compiler interface was exercised with a finite authenticated carrier and a removable envelope.",
-      "reason": "No production code-watermark implementation with a reproducible CPU-only setup was available in the project inputs.",
-      "claim_control": "The paper states non-vacuity and interface correspondence, not production robustness.",
-      "required_external_action": "Instantiate the four games with a real code-watermark backend and realistic transformation workload."
-    },
-    {
-      "gap": "independent_technical_review",
-      "attempt": "Internal theorem, code, citation, and visual audits were completed.",
-      "reason": "A genuinely independent reviewer with no project history is not available in this session.",
-      "claim_control": "No acceptance, Best Paper, or independent-review claim is made.",
-      "required_external_action": "Obtain independent human review before submission."
     }
   ]
 }

@@ -63,6 +63,10 @@ class AuthenticatedEnvelopeBackend:
         return hmac.new(key, message, hashlib.sha256).hexdigest()
 
     def mark(self, key: bytes, program: dict[str, Any], payload: str) -> dict[str, Any]:
+        try:
+            canonical_bytes(program)
+        except (CanonicalizationError, TypeError, ValueError, RecursionError) as exc:
+            raise MarkingError("program is outside the canonical artifact language") from exc
         if not isinstance(payload, str) or len(payload) != 64 or payload != payload.lower():
             raise MarkingError("payload must be canonical lowercase SHA-256 hexadecimal")
         try:
@@ -81,6 +85,10 @@ class AuthenticatedEnvelopeBackend:
         try:
             if not isinstance(artifact, dict):
                 return None
+            # Canonicalize the complete artifact before the binder erases any
+            # carrier field.  Otherwise malformed data in a binder-ignored
+            # field could bypass the public artifact language.
+            canonical_bytes(artifact)
             envelope = artifact.get("_contextmark")
             if not isinstance(envelope, dict) or set(envelope) != self.FIELDS:
                 return None
@@ -97,7 +105,7 @@ class AuthenticatedEnvelopeBackend:
             if not hmac.compare_digest(tag, expected):
                 return None
             return payload
-        except (CanonicalizationError, ValueError, TypeError):
+        except (CanonicalizationError, ValueError, TypeError, RecursionError, RuntimeError):
             return None
 
 
@@ -425,7 +433,7 @@ class ContextMarkCompiler:
             if self.backend.read(key, artifact) != tip["context"]:
                 raise ContextMarkError("tip payload mismatch")
             return VerificationResult(True, "accepted")
-        except (ContextMarkError, CanonicalizationError, TypeError, ValueError) as exc:
+        except (ContextMarkError, CanonicalizationError, TypeError, ValueError, RecursionError, RuntimeError) as exc:
             return VerificationResult(False, str(exc))
 
     def verify(self, chain: Any, artifact: Any) -> bool:

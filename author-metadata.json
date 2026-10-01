@@ -1,7 +1,7 @@
 {
-  "schema": "tdsc-author-metadata",
-  "updated_utc": "2026-09-24T08:36:48Z",
-  "status": "THREE_IDENTIFIED_AUTHORS_AND_THREE_RESERVED_SLOTS",
+  "schema": "tdsc-author-metadata-v2",
+  "updated_utc": "2026-09-26T09:27:49Z",
+  "status": "HUMAN_CONFIRMATION_REQUIRED_THREE_IDENTIFIED_AUTHORS_THREE_RESERVED_SLOTS",
   "planned_slots": 6,
   "identified_authors": 3,
   "submission_ready": false,
@@ -59,11 +59,14 @@
       "status": "RESERVED_EMPTY_SLOT"
     }
   ],
-  "rendering": "The first row prints the three identified authors; an invisible fixed-width second row reserves equal space for positions four through six without inventing identities.",
+  "rendering": "The manuscript prints the three identified authors and reserves three invisible equal-width slots. The package does not establish whether the intended final article has three authors or six.",
   "blocking_human_actions": [
-    "identify positions 4--6",
-    "confirm eligibility, order, contributions, conflicts, rights, and final approval",
-    "confirm corresponding author",
+    "confirm whether the intended author count is three or six",
+    "confirm whether positions 4--6 are genuine planned authors or layout-only reservations",
+    "if additional authors exist, obtain their identities, eligibility, affiliations, emails, ORCIDs, contribution statements, conflicts, rights, and final approval",
+    "if the paper has only three authors, remove the phantom reservation after all three authors approve the change",
+    "confirm author order and the provisional corresponding-author designation",
+    "obtain contribution and final-submission approval from every actual author",
     "provide Xunzhu Tang ORCID if one exists"
   ]
 }

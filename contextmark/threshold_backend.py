@@ -68,6 +68,13 @@ def _commit(payload: bytes) -> str:
     return hashlib.sha256(b"contextmark/threshold/commit/v1\0" + payload).hexdigest()
 
 
+def payload_commitment(payload: bytes) -> str:
+    """Return the public commitment used to canonically order payload groups."""
+    if not isinstance(payload, bytes) or len(payload) != PAYLOAD_BYTES:
+        raise ThresholdCarrierError("payload must contain exactly 32 bytes")
+    return _commit(payload)
+
+
 def binder(program: dict[str, Any]) -> str:
     clean = without_watermark(program)
     clean.pop(CARRIER_FIELD, None)
@@ -210,8 +217,42 @@ def read_candidates(key: bytes, program: dict[str, Any]) -> list[tuple[str, byte
 
 
 def read(key: bytes, program: dict[str, Any]) -> bytes | None:
+    """Return one canonical contributor payload, or ``None``.
+
+    For a single issued group this is its exact payload.  With several
+    threshold-reaching groups under the same key, :func:`read_candidates`
+    exposes the complete candidate set and this function returns only the
+    payload whose commitment is lexicographically smallest.  It must not be
+    interpreted as recovering every contributor through one scalar return.
+    """
     candidates = read_candidates(key, program)
     return candidates[0][1] if candidates else None
+
+
+def trace_context_payloads(
+    context_keys: list[tuple[str, bytes]],
+    program: dict[str, Any],
+) -> list[str]:
+    """Return compiler contexts whose own key recovers their exact tip payload.
+
+    ``context_keys`` is the executable part of a compiled coalition pattern:
+    each context is a signed-tip digest and each key is the compiler key derived
+    for that context.  Signature validity is checked by the caller because this
+    backend intentionally has no dependency on the compiler module.
+    """
+    traced: list[str] = []
+    for context, key in context_keys:
+        if not isinstance(context, str) or len(context) != 64 or context != context.lower():
+            raise ThresholdCarrierError("context is not canonical lowercase hexadecimal")
+        try:
+            payload = bytes.fromhex(context)
+        except ValueError as exc:
+            raise ThresholdCarrierError("context is not hexadecimal") from exc
+        if len(payload) != PAYLOAD_BYTES:
+            raise ThresholdCarrierError("context payload has the wrong length")
+        if read(key, program) == payload:
+            traced.append(context)
+    return sorted(set(traced))
 
 
 def public_authorized_derivative(issued: dict[str, Any], candidate: dict[str, Any], *, threshold: int) -> bool:
