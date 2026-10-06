@@ -29,7 +29,7 @@ Requirements are CPU-only Python 3.12 or later and the two versions in `requirem
 
 Recovery authenticates snapshots and additionally validates request identities, canonical program bytes, request-to-record agreement, and successful ancestry of every non-genesis terminal attempt. It still does not implement persistent pending reservations or prevent rollback to an older authenticated snapshot. Risk formulas require nonnegative integer budgets and valid primitive probabilities; invalid inputs are rejected, not assigned a zero-security-loss result.
 
-The prepared `scientific-checks.yml` workflow targets a flat artifact repository on Ubuntu 24.04. It installs the declared dependencies, bounds the complete owned finite run, retains scientific failure gates, and uploads raw output even after failure. A workflow definition is not evidence that it has run remotely.
+The `scientific-checks.yml` workflow targets a flat artifact repository on Ubuntu 24.04. It installs the declared dependencies, bounds the complete owned finite run, retains scientific failure gates, and uploads raw output even after failure. The current Linux run in `results/current/` passes 101 tests without skips, rejects all 47 mutations, and checks 4,352 compiled coalition cells, 128 closure cases, 4,802 field-reader cases and 496 threshold cases. Recovery and terminal-state checks pass. Earlier Linux CPU measurements remain separate from this execution.
 
 ## Evidence interpretation
 
