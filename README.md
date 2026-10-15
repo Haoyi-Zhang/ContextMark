@@ -137,3 +137,11 @@ unchanged. This regression does not run a campaign or measure performance.
 ## Limits
 
 The finite carrier is visible and language-bounded. The envelope is intentionally removable. The finite truth table is not a distribution over real attackers. The probability grid is diagnostic; uniform validity comes from the theorem. The pinned in-toto dependency could not be acquired after a concrete attempt, so no in-toto execution or performance score is claimed.
+
+## Explanatory manuscript diagrams
+
+The signed-record/artifact lanes and the four-game reduction dependencies use
+font-embedded vector PDFs drawn directly in Python. With Python 3.9+ and
+Matplotlib, run `python -B figures/draw_schematics.py --output figures`.
+The measured security and scaling plots retain their separate data-based
+Python generators described above.
