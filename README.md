@@ -47,8 +47,21 @@ seven request-transcript,
 four risk-input, two owner-lifetime and three loopback). Its results are in
 `results/owned-workflow/tests.json`. This subset does not rerun the archived
 attack/probability campaigns. Historical CPU data and source bindings are not
-overwritten or relabeled; an old manifest is expected not to match changed
-sources. The bounded outputs are not a complete `verify_release.py` campaign.
+overwritten or relabeled. Recover the archived source versions before checking
+their manifests against code; current source files include subsequent repairs.
+The bounded outputs are not a complete `verify_release.py` campaign.
+
+The 66-entry `results/raw/run-manifest.json` is recoverable with the original
+`contextmark/bounds.py`, `contextmark/compiler.py`, `run_experiments.py`, and
+`run_experiments_sharded.sh` from the [archived source commit](https://github.com/Haoyi-Zhang/ContextMark/tree/bf452eb29257baf411640218a748199e8e48a285).
+The 67-entry `results/current/raw/run-manifest.json` uses
+`contextmark/compiler.py`, `run_experiments.py`, and
+`tests/test_review_regressions.py` from its [archived source commit](https://github.com/Haoyi-Zhang/ContextMark/tree/a4fbb62f2038b811bd0474cb7a20bdd6f63a24c2).
+All 133 file identities were checked against the unchanged manifests using
+those seven recovered files and the remaining unchanged local files. Recover
+historical code into a separate directory, not over the repaired current
+implementation. This check restores source identity; the recorded experiments
+and their hardware measurements remain historical executions.
 
 Recovery authenticates snapshots and additionally validates request identities, canonical program bytes, request-to-record agreement, and successful ancestry of every non-genesis terminal attempt. The optional `registry_path` adds a single-owner authenticated SQLite ledger with pending reservation committed before key derivation/marking, terminal success/failure committed before release, and conservative restart recovery. It does not prevent rollback to an older authenticated snapshot. Risk formulas require nonnegative integer budgets and valid primitive probabilities; invalid inputs are rejected, not assigned a zero-security-loss result.
 
@@ -116,7 +129,7 @@ end-to-end provenance competitor or novelty result.
 
 The `scientific-checks.yml` workflow targets a flat artifact repository on Ubuntu 24.04. It installs the declared dependencies, bounds the complete owned finite run, retains scientific failure gates, and uploads raw output even after failure. The retained Linux run in `results/current/` passed the then-current 101 tests without skips, rejected all 47 mutations, and checked 4,352 compiled coalition cells, 128 closure cases, 4,802 field-reader cases and 496 threshold cases. Recovery and terminal-state checks passed in that run. Its CPU measurements remain tied to that execution.
 
-At canonical head [`971f29a09e39d3ba158d54b7f909ea3c27088b9a`](https://github.com/Haoyi-Zhang/ContextMark/commit/971f29a09e39d3ba158d54b7f909ea3c27088b9a), GitHub [scientific run 38188562264, job 114616133565](https://github.com/Haoyi-Zhang/ContextMark/actions/runs/38188562264/job/114616133565) completed successfully. Its log records `deterministic_test_count: 127`, `passed: 127`, `failed: 0`, and 4,352 compiled coalition cells with zero trace mismatches and zero canonical-selection mismatches. These are bounded deterministic CI results; the retained local measurement timestamps and CPU timings are unchanged, and no fresh remote latency result is claimed here.
+For source commit [`12a8e0b0774911b8eeac76b67083e84cd625bc55`](https://github.com/Haoyi-Zhang/ContextMark/commit/12a8e0b0774911b8eeac76b67083e84cd625bc55), GitHub [scientific run 39038421197, job 117412823269](https://github.com/Haoyi-Zhang/ContextMark/actions/runs/39038421197/job/117412823269) completed successfully. Its log records 136 tests passed with no failures, all 47 mutations rejected, 4,352 compiled coalition cells with zero trace mismatches and zero canonical-selection mismatches, and 76 execution-manifest entries verified. These are bounded deterministic CI results; the retained local measurement timestamps and CPU timings are unchanged.
 
 ## Evidence interpretation
 
