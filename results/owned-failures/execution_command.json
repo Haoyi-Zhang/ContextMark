@@ -1,14 +1,14 @@
 {
   "argv": [
-    "C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "<PYTHON_ROOT>\\python.exe",
     "-B",
-    "D:\\CodexProjects\\wg-check\\substantive-library\\P029\\artifact\\reproduce_owned_failures.py",
+    "<PROJECTS_ROOT>\\wg-check\\substantive-library\\P029\\artifact\\reproduce_owned_failures.py",
     "--out",
-    "D:/CodexProjects/2026-07-13/new-chat-4/completion_workspace/library_review/private/substantive_library_completion/P029/network-failures/raw",
+    "<PROJECTS_ROOT>/2026-07-13/new-chat-4/completion_workspace/library_review/private/substantive_library_completion/P029/network-failures/raw",
     "--work",
-    "D:/CodexProjects/2026-07-13/new-chat-4/completion_workspace/library_review/private/substantive_library_completion/P029/network-failures/raw-work"
+    "<PROJECTS_ROOT>/2026-07-13/new-chat-4/completion_workspace/library_review/private/substantive_library_completion/P029/network-failures/raw-work"
   ],
-  "cwd": "D:\\CodexProjects\\wg-check\\substantive-library\\P029\\artifact",
+  "cwd": "<PROJECTS_ROOT>\\wg-check\\substantive-library\\P029\\artifact",
   "exit_code": 0,
   "wall_seconds": 0.15983910000068136,
   "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
@@ -18,9 +18,9 @@
   "environment": {
     "PYTHONDONTWRITEBYTECODE": "1",
     "PYTHONUTF8": "1",
-    "TMP": "D:\\CodexProjects\\2026-07-13\\new-chat-4\\completion_workspace\\library_review\\private\\substantive_library_completion\\P029\\network-failures\\temp",
-    "TEMP": "D:\\CodexProjects\\2026-07-13\\new-chat-4\\completion_workspace\\library_review\\private\\substantive_library_completion\\P029\\network-failures\\temp",
-    "CONTEXTMARK_OWNED_WORK_ROOT": "D:\\CodexProjects\\2026-07-13\\new-chat-4\\completion_workspace\\library_review\\private\\substantive_library_completion\\P029\\network-failures\\work",
-    "PYTHONPATH": "D:\\CodexProjects\\wg-check\\substantive-library\\P029\\artifact;D:\\CodexProjects\\wg-check\\substantive-library\\P029\\artifact\\tests"
+    "TMP": "<PROJECTS_ROOT>\\2026-07-13\\new-chat-4\\completion_workspace\\library_review\\private\\substantive_library_completion\\P029\\network-failures\\temp",
+    "TEMP": "<PROJECTS_ROOT>\\2026-07-13\\new-chat-4\\completion_workspace\\library_review\\private\\substantive_library_completion\\P029\\network-failures\\temp",
+    "CONTEXTMARK_OWNED_WORK_ROOT": "<PROJECTS_ROOT>\\2026-07-13\\new-chat-4\\completion_workspace\\library_review\\private\\substantive_library_completion\\P029\\network-failures\\work",
+    "PYTHONPATH": "<PROJECTS_ROOT>\\wg-check\\substantive-library\\P029\\artifact;<PROJECTS_ROOT>\\wg-check\\substantive-library\\P029\\artifact\\tests"
   }
 }

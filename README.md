@@ -158,3 +158,7 @@ font-embedded vector PDFs drawn directly in Python. With Python 3.9+ and
 Matplotlib, run `python -B figures/draw_schematics.py --output figures`.
 The measured security and scaling plots retain their separate data-based
 Python generators described above.
+
+## Portable path notation
+
+Published execution records use `<PYTHON_ROOT>`, `<NODE_ROOT>`, `<RUNTIME_ROOT>` and `<PROJECTS_ROOT>` for machine-local installation and workspace prefixes. These are path aliases, not literal directories; substitute the corresponding local roots when replaying a command. Recorded interpreter and dependency versions, inputs, measurements and outcomes are unchanged. File inventories bind the published portable serializations; any `recorded_` identity denotes the pre-normalization bytes.
