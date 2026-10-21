@@ -5,14 +5,32 @@ The artifact checks implementation correspondence for the context-bound lineage 
 ## Figures
 
 `reporting/draw_security.py` reads the four retained security CSVs and produces
-the two editable-source vector plots. It requires matplotlib 3.10.8, numpy
-2.3.5, fontTools, and an installed embeddable Times-compatible TrueType family.
+the two editable-source vector plots. The retained rendering used matplotlib
+3.10.8 and numpy 2.3.5; compatible presentation dependencies are declared in the
+full packet's `paper/requirements.txt`. fontTools and an installed embeddable
+Times-compatible TrueType family are required.
 It prefers TeX Gyre Termes, then Times New Roman, then Liberation Serif; it does
 not install or redistribute font files. Run it from this repository with
 `python reporting/draw_security.py`; use `--outdir` to select an output folder.
 The full paper/artifact packet's figure wrapper uses the same renderer, so
 plot data, axes and styles have one source. No security experiment is rerun by
 this drawing command.
+
+In the full paper/artifact packet, `python -B paper/build.py` from the project
+root (or `paper/build.sh`) runs both real statistical renderers before TeX.
+It uses the retained CSV snapshot; input validation or missing plotting
+dependencies fail the build instead of accepting cached figures. Presentation
+dependencies are declared in `paper/requirements.txt`, separately from the
+historical experiment pins below. `paper/figures/draw_evaluation.py` retains
+its strict row comparisons and supports `--outdir` for isolated rendering.
+
+`claim_evidence_ledger.csv` labels five supplement-source bindings as
+`current_manuscript` and all recorded result bindings as `retained_execution`.
+The latter hashes, files and historical source manifests are unchanged.
+`proof-index.csv` points to current source declarations, including live-owner
+quiescence. From a full packet, `python -B paper/build.py --check-evidence`
+checks both mappings without running tests, experiments or TeX. A standalone
+artifact has no manuscript tree; its execution verifier remains separate.
 
 ## Run
 

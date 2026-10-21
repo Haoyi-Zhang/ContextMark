@@ -4,7 +4,9 @@ This is a presentation conversion, not a security experiment. Read the canonical
 artifact/results/derived CSVs without recalculating, fitting, or extrapolating
 either curve. Paths are anchored to this script, not the working directory.
 
-Run with Python, matplotlib 3.10.8, numpy 2.3.5 and fontTools. Use only existing
+The retained rendering used matplotlib 3.10.8 and numpy 2.3.5. The full packet's
+paper/requirements.txt declares compatible presentation dependencies, including
+fontTools. Use only existing
 TrueType fonts, in order: TeX Gyre Termes, Times New Roman, Liberation Serif.
 The installed font manager supplies the Windows Times / Linux Liberation
 fallback; --font-dir can select an existing directory containing these TTFs.
