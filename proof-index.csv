@@ -1,27 +1,27 @@
 document,entry,kind,title,line,mechanized
-paper/main.tex,1,definition,Binder stability and separation,118,False
-paper/main.tex,2,definition,Removal,131,False
-paper/main.tex,3,proposition,Clean-copy impossibility,135,False
-paper/main.tex,4,definition,Non-transferability,141,False
-paper/main.tex,5,definition,Payload unforgeability,147,False
-paper/main.tex,6,definition,Coalition trace survival,153,False
-paper/main.tex,7,proposition,Linearizable one-attempt issuance,224,False
-paper/main.tex,8,proposition,Verified-tip refinement,241,False
-paper/main.tex,9,lemma,Honest correctness,252,False
-paper/main.tex,10,lemma,Accepted-chain classification,259,False
-paper/main.tex,11,lemma,Exact-tip acceptance,266,False
-paper/main.tex,12,lemma,Host-intersection bound,273,False
-paper/main.tex,13,proposition,Public authorization closure,285,False
-paper/main.tex,14,proposition,Failure cannot multiply samples,292,False
-paper/main.tex,15,theorem,Stopped first-hit composition,315,False
-paper/main.tex,16,theorem,Context-bound compiler composition,361,False
-paper/main.tex,17,theorem,Evidence-conditioned composition,411,False
-paper/main.tex,18,proposition,Derivation-graph lifting,444,False
-paper/main.tex,19,proposition,Multi-lineage lifting,460,False
-paper/main.tex,20,proposition,Finite threshold reader semantics,534,False
-paper/main.tex,21,lemma,Parser--authorization alignment,546,False
-paper/main.tex,22,proposition,One-basis residual validation,555,False
-paper/main.tex,23,proposition,Monotone conservative substitution,714,False
+paper/main.tex,1,definition,Binder stability and separation,117,False
+paper/main.tex,2,definition,Removal,130,False
+paper/main.tex,3,proposition,Clean-copy impossibility,134,False
+paper/main.tex,4,definition,Non-transferability,140,False
+paper/main.tex,5,definition,Payload unforgeability,146,False
+paper/main.tex,6,definition,Coalition trace survival,152,False
+paper/main.tex,7,proposition,Linearizable one-attempt issuance,223,False
+paper/main.tex,8,proposition,Verified-tip refinement,240,False
+paper/main.tex,9,lemma,Honest correctness,251,False
+paper/main.tex,10,lemma,Accepted-chain classification,258,False
+paper/main.tex,11,lemma,Exact-tip acceptance,265,False
+paper/main.tex,12,lemma,Host-intersection bound,272,False
+paper/main.tex,13,proposition,Public authorization closure,284,False
+paper/main.tex,14,proposition,Failure cannot multiply samples,291,False
+paper/main.tex,15,theorem,Stopped first-hit composition,314,False
+paper/main.tex,16,theorem,Context-bound compiler composition,360,False
+paper/main.tex,17,theorem,Evidence-conditioned composition,410,False
+paper/main.tex,18,proposition,Derivation-graph lifting,443,False
+paper/main.tex,19,proposition,Multi-lineage lifting,459,False
+paper/main.tex,20,proposition,Finite threshold reader semantics,533,False
+paper/main.tex,21,lemma,Parser--authorization alignment,545,False
+paper/main.tex,22,proposition,One-basis residual validation,554,False
+paper/main.tex,23,proposition,Monotone conservative substitution,713,False
 paper/supplement.tex,1,proposition,One-attempt issuance,93,False
 paper/supplement.tex,2,proposition,Live-owner quiescence,101,False
 paper/supplement.tex,3,proposition,Resume continuity,126,False
